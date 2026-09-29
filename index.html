@@ -1079,255 +1079,338 @@ body {
 .tab-panel.active { display: block; }
 
 /* ============================================================
-   FLIGHT TRACKING UI
+   AIRPORT BOARD — Solari flip-board style
    ============================================================ */
-.track-section {
-  background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d2137 100%);
-  padding: 10px 0 50px;
-  margin-bottom: 30px;
+.board-wrap {
+  background: #1a1a1a;
+  min-height: calc(100vh - 120px);
+  padding: 0 0 40px;
 }
-.track-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 28px;
-  box-shadow: var(--shadow);
+
+/* Airport selector bar */
+.airport-selector {
+  background: #111;
+  border-bottom: 1px solid #333;
+  padding: 14px 0;
 }
-.track-mode-toggle {
+.airport-selector-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.airport-selector label {
+  color: #ffc107;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.airport-select {
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  min-width: 220px;
+}
+.airport-select:focus { outline: none; border-color: #ffc107; }
+.locate-btn {
+  background: #333;
+  color: #4fc3f7;
+  border: 1px solid #555;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+.locate-btn:hover { background: #444; }
+.board-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #888;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+}
+.live-dot {
+  width: 8px; height: 8px;
+  background: #00e676;
+  border-radius: 50%;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,230,118,0.6); }
+  50% { opacity: 0.7; box-shadow: 0 0 8px 4px rgba(0,230,118,0.2); }
+}
+
+/* Flight number search bar */
+.flight-search-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.flight-search-bar input {
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  width: 200px;
+  text-transform: uppercase;
+}
+.flight-search-bar input:focus { outline: none; border-color: #ffc107; }
+.flight-search-bar input::placeholder { color: #666; }
+.flight-search-btn {
+  background: #ffc107;
+  color: #111;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.flight-search-btn:hover { background: #ffca28; }
+
+/* Board header */
+.board-header {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.board-title {
+  color: #ffc107;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.board-toggle {
   display: flex;
   gap: 0;
-  margin-bottom: 20px;
-  background: #f0f2f5;
-  border-radius: var(--radius-sm);
-  padding: 4px;
-  width: fit-content;
+  background: #222;
+  border-radius: 4px;
+  border: 1px solid #444;
+  overflow: hidden;
 }
-.track-mode-btn {
-  padding: 8px 20px;
+.board-toggle-btn {
+  padding: 10px 24px;
   border: none;
   background: transparent;
+  color: #888;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: 6px;
-  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
   transition: all 0.2s;
 }
-.track-mode-btn.active {
-  background: white;
-  color: var(--primary);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+.board-toggle-btn.active {
+  background: #ffc107;
+  color: #111;
 }
-.track-input-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  flex-wrap: wrap;
+.board-toggle-btn:hover:not(.active) { color: #fff; background: #333; }
+
+/* The board table */
+.board-container {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 0 20px;
+  overflow-x: auto;
 }
-.track-input-row .form-group { flex: 1; min-width: 200px; }
-.track-input-row input, .track-input-row select {
+.board-table {
   width: 100%;
-  padding: 12px 14px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 1rem;
-  transition: border-color 0.2s;
+  border-collapse: collapse;
+  font-family: 'Courier New', Courier, monospace;
+  background: #111;
+  border-radius: 6px;
+  overflow: hidden;
 }
-.track-input-row input:focus, .track-input-row select:focus {
-  outline: none;
-  border-color: var(--primary);
-}
-.track-btn {
-  padding: 12px 32px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: transform 0.1s, box-shadow 0.2s;
-}
-.track-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,82,204,0.4); }
-.track-btn:active { transform: translateY(0); }
-
-/* Track results */
-.track-results { margin-top: 30px; }
-.track-results h2 {
-  font-size: 1.2rem;
-  margin-bottom: 16px;
-  color: var(--text);
-}
-.track-summary-bar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-.track-stat {
-  background: #f0f2f5;
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-.track-stat .stat-num {
-  font-size: 1.3rem;
-  color: var(--primary);
-  display: block;
-}
-
-/* Flight status cards */
-.track-flight-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 22px;
-  margin-bottom: 12px;
-  display: grid;
-  grid-template-columns: 100px 1fr 1fr auto;
-  gap: 16px;
-  align-items: center;
-  transition: box-shadow 0.2s;
-}
-.track-flight-card:hover { box-shadow: var(--shadow-hover); }
-
-.track-flight-id {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.track-flight-id .flight-code {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--primary);
-}
-.track-flight-id .airline-name {
+.board-table thead th {
+  background: #1a1a1a;
+  color: #ffc107;
   font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-align: center;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 2px solid #333;
+  white-space: nowrap;
 }
-
-.track-airport {
-  display: flex;
-  flex-direction: column;
+.board-table tbody tr {
+  border-bottom: 1px solid #222;
+  transition: background 0.3s;
 }
-.track-airport .airport-code {
-  font-size: 1.3rem;
-  font-weight: 800;
+.board-table tbody tr:hover { background: #1a1a2a; }
+.board-table tbody td {
+  padding: 11px 14px;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.board-table .col-time {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
   letter-spacing: 1px;
 }
-.track-airport .airport-name {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.board-table .col-flight {
+  color: #4fc3f7;
+  font-weight: 700;
 }
-.track-airport .time-scheduled {
-  font-size: 0.85rem;
-  color: var(--text);
-  margin-top: 4px;
-}
-.track-airport .time-actual {
-  font-size: 0.75rem;
-  color: var(--success);
+.board-table .col-dest {
+  color: #fff;
   font-weight: 600;
 }
-.track-airport .time-delay {
-  font-size: 0.75rem;
-  color: var(--accent);
-  font-weight: 600;
+.board-table .col-airline {
+  color: #aaa;
+  font-size: 0.8rem;
+}
+.board-table .col-gate {
+  color: #ffc107;
+  font-weight: 700;
+  text-align: center;
+}
+.board-table .col-terminal {
+  color: #aaa;
+  text-align: center;
 }
 
-.flight-status-badge {
-  padding: 6px 14px;
-  border-radius: 20px;
+/* Status badges on the board */
+.board-status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 3px;
   font-size: 0.75rem;
   font-weight: 700;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-family: 'Courier New', Courier, monospace;
+}
+.bs-scheduled { background: #1a237e; color: #90caf9; }
+.bs-active { background: #1b5e20; color: #69f0ae; }
+.bs-landed { background: #4a148c; color: #ce93d8; }
+.bs-cancelled { background: #b71c1c; color: #ffcdd2; }
+.bs-diverted { background: #e65100; color: #ffcc80; }
+.bs-incident { background: #bf360c; color: #ffab91; }
+.bs-unknown { background: #333; color: #888; }
+
+.delay-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  background: #ff6f00;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Flip animation for row updates */
+.board-table tbody tr.flip-in {
+  animation: flipIn 0.4s ease-out;
+}
+@keyframes flipIn {
+  0% { transform: rotateX(90deg); opacity: 0; }
+  100% { transform: rotateX(0deg); opacity: 1; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Board loading / error / empty states */
+.board-loading {
   text-align: center;
-  white-space: nowrap;
+  padding: 60px 20px;
+  color: #888;
+  font-family: 'Courier New', Courier, monospace;
 }
-.status-scheduled { background: #e3f2fd; color: #1565c0; }
-.status-active { background: #e8f5e9; color: #2e7d32; }
-.status-landed { background: #f3e5f5; color: #7b1fa2; }
-.status-cancelled { background: #ffebee; color: #c62828; }
-.status-incident { background: #fff3e0; color: #e65100; }
-.status-diverted { background: #fff8e1; color: #f57f17; }
-.status-unknown { background: #f5f5f5; color: #616161; }
-
-.track-flight-route {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.route-line {
-  flex: 1;
-  height: 2px;
-  background: var(--border);
-  position: relative;
-  min-width: 40px;
-}
-.route-line::after {
-  content: '';
-  position: absolute;
-  right: -3px;
-  top: -3px;
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid var(--primary);
-  border-top: 2px solid var(--primary);
-  transform: rotate(45deg);
-}
-
-.track-extra-info {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-top: 6px;
-}
-
-.track-loading {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-secondary);
-}
-.track-loading .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--border);
-  border-top-color: var(--primary);
+.board-loading .spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #333;
+  border-top-color: #ffc107;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 16px;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.track-error {
-  background: #fff3e0;
-  border: 1px solid #ffe0b2;
-  color: #e65100;
+.board-error {
+  max-width: 1200px;
+  margin: 20px auto;
   padding: 16px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
+  background: #3e1a00;
+  border: 1px solid #ff6f00;
+  color: #ffcc80;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+}
+.board-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
 }
 
-.track-empty {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
+/* Board stats bar */
+.board-stats {
+  max-width: 1200px;
+  margin: 12px auto 0;
+  padding: 0 20px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.board-stat-chip {
+  background: #222;
+  border: 1px solid #333;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  color: #aaa;
+}
+.board-stat-chip strong {
+  color: #ffc107;
+  margin-right: 4px;
 }
 
 @media (max-width: 768px) {
   .main-tab-btn { padding: 12px 16px; font-size: 0.85rem; }
   .main-tabs { top: 56px; }
-  .track-flight-card { grid-template-columns: 1fr; text-align: center; }
-  .track-flight-route { justify-content: center; }
-  .track-input-row { flex-direction: column; }
-  .track-input-row .form-group { min-width: 100%; }
+  .airport-selector-inner { flex-direction: column; align-items: stretch; }
+  .board-status { margin-left: 0; }
+  .board-title { font-size: 1.1rem; }
+  .board-toggle-btn { padding: 8px 14px; font-size: 0.8rem; }
+  .board-table { font-size: 0.8rem; }
+  .board-table thead th { padding: 10px 8px; font-size: 0.65rem; }
+  .board-table tbody td { padding: 9px 8px; font-size: 0.8rem; }
+  .flight-search-bar { flex-wrap: wrap; }
+  .flight-search-bar input { width: 100%; }
 }
 </style>
 </head>
@@ -1773,79 +1856,48 @@ body {
 
 <!-- ============ TAB: TRACK FLIGHTS ============ -->
 <div id="tab-track" class="tab-panel">
+<div class="board-wrap">
 
-<section class="track-section">
-  <div class="container">
-    <div class="track-card">
-      <!-- Track Mode Toggle -->
-      <div class="track-mode-toggle">
-        <button class="track-mode-btn active" data-mode="flight" onclick="setTrackMode('flight')">By Flight</button>
-        <button class="track-mode-btn" data-mode="airport" onclick="setTrackMode('airport')">By Airport</button>
-        <button class="track-mode-btn" data-mode="airline" onclick="setTrackMode('airline')">By Airline</button>
+  <!-- Airport Selector Bar -->
+  <div class="airport-selector">
+    <div class="airport-selector-inner">
+      <label>Airport:</label>
+      <select id="board-airport" class="airport-select" onchange="boardAirportChanged()">
+        <option value="">-- Select Airport --</option>
+      </select>
+      <button class="locate-btn" onclick="detectNearestAirport()">&#9737; Detect My Location</button>
+      <!-- Track individual flight -->
+      <div class="flight-search-bar" style="margin-left:0;">
+        <input type="text" id="board-flight-input" placeholder="Track flight e.g. AI101" autocomplete="off">
+        <button class="flight-search-btn" onclick="boardTrackFlight()">TRACK</button>
       </div>
-
-      <!-- Flight Number Search -->
-      <div id="track-flight-form" class="track-input-row">
-        <div class="form-group">
-          <label>Flight Number</label>
-          <input type="text" id="track-flight-input" placeholder="e.g. AI101, 6E2341, EK507" autocomplete="off" style="text-transform:uppercase;">
-        </div>
-        <button class="track-btn" onclick="trackFlight()">Track Flight</button>
-      </div>
-
-      <!-- Airport Search -->
-      <div id="track-airport-form" class="track-input-row" style="display:none;">
-        <div class="form-group">
-          <label>Airport Code</label>
-          <input type="text" id="track-airport-input" placeholder="e.g. DEL, BOM, DXB" autocomplete="off" maxlength="3" style="text-transform:uppercase;">
-        </div>
-        <div class="form-group">
-          <label>Type</label>
-          <select id="track-airport-type">
-            <option value="departure">Departures</option>
-            <option value="arrival">Arrivals</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Status</label>
-          <select id="track-airport-status">
-            <option value="">All</option>
-            <option value="active">Active / In Air</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="landed">Landed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-        <button class="track-btn" onclick="trackAirport()">Track Airport</button>
-      </div>
-
-      <!-- Airline Search -->
-      <div id="track-airline-form" class="track-input-row" style="display:none;">
-        <div class="form-group">
-          <label>Airline Code</label>
-          <input type="text" id="track-airline-input" placeholder="e.g. AI, 6E, EK, SQ" autocomplete="off" maxlength="2" style="text-transform:uppercase;">
-        </div>
-        <div class="form-group">
-          <label>Status</label>
-          <select id="track-airline-status">
-            <option value="">All</option>
-            <option value="active">Active / In Air</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="landed">Landed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-        <button class="track-btn" onclick="trackAirline()">Track Airline</button>
+      <div class="board-status" id="board-live-status" style="display:none;">
+        <span class="live-dot"></span>
+        <span id="board-refresh-text">LIVE</span>
       </div>
     </div>
   </div>
-</section>
 
-<!-- Track Results -->
-<section class="container" id="track-results-section" style="display:none;">
-  <div id="track-results-content"></div>
-</section>
+  <!-- Board Header -->
+  <div class="board-header">
+    <div class="board-title" id="board-title">SELECT AN AIRPORT</div>
+    <div class="board-toggle">
+      <button class="board-toggle-btn active" data-btype="departure" onclick="setBoardType('departure')">DEPARTURES</button>
+      <button class="board-toggle-btn" data-btype="arrival" onclick="setBoardType('arrival')">ARRIVALS</button>
+    </div>
+  </div>
 
+  <!-- Stats -->
+  <div class="board-stats" id="board-stats"></div>
+
+  <!-- The Board -->
+  <div class="board-container">
+    <div id="board-content">
+      <div class="board-empty">Select an airport above or allow location access to see live departures and arrivals.</div>
+    </div>
+  </div>
+
+</div>
 </div><!-- END TAB: TRACK FLIGHTS -->
 
 <!-- Footer -->
@@ -3216,215 +3268,415 @@ window.addEventListener('pageshow', function() {
 });
 
 // ============================================================
-// MAIN TAB SWITCHING
+// AIRPORT BOARD — Real-time Solari-style display
 // ============================================================
-function switchMainTab(tab) {
-  document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
+let boardCurrentAirport = '';
+let boardType = 'departure';
+let boardRefreshTimer = null;
+let boardLastData = null;
+const BOARD_REFRESH_INTERVAL = 30000; // 30 seconds
+
+// Airport coordinates for geolocation matching
+const airportCoords = [
+  { code: 'DEL', name: 'Delhi - Indira Gandhi Intl', lat: 28.5665, lon: 77.1031 },
+  { code: 'BOM', name: 'Mumbai - CSM Intl', lat: 19.0896, lon: 72.8656 },
+  { code: 'BLR', name: 'Bengaluru - Kempegowda Intl', lat: 13.1986, lon: 77.7066 },
+  { code: 'MAA', name: 'Chennai Intl', lat: 12.9941, lon: 80.1709 },
+  { code: 'HYD', name: 'Hyderabad - Rajiv Gandhi Intl', lat: 17.2403, lon: 78.4294 },
+  { code: 'CCU', name: 'Kolkata - Netaji Subhas Intl', lat: 22.6547, lon: 88.4467 },
+  { code: 'GOI', name: 'Goa - Mopa / Dabolim', lat: 15.3808, lon: 73.8314 },
+  { code: 'COK', name: 'Kochi - Cochin Intl', lat: 10.152, lon: 76.4019 },
+  { code: 'AMD', name: 'Ahmedabad - SVP Intl', lat: 23.0772, lon: 72.6347 },
+  { code: 'PNQ', name: 'Pune Airport', lat: 18.5822, lon: 73.9197 },
+  { code: 'JAI', name: 'Jaipur Intl', lat: 26.8242, lon: 75.8122 },
+  { code: 'LKO', name: 'Lucknow - Chaudhary Charan Singh', lat: 26.7606, lon: 80.8893 },
+  { code: 'TRV', name: 'Thiruvananthapuram Intl', lat: 8.4821, lon: 76.9200 },
+  { code: 'GAU', name: 'Guwahati - Lokpriya Gopinath', lat: 26.1061, lon: 91.5859 },
+  { code: 'VTZ', name: 'Visakhapatnam Airport', lat: 17.7231, lon: 83.2245 },
+  { code: 'IXC', name: 'Chandigarh Airport', lat: 30.6735, lon: 76.7885 },
+  { code: 'PAT', name: 'Patna - Jay Prakash Narayan', lat: 25.5913, lon: 85.0880 },
+  { code: 'BBI', name: 'Bhubaneswar - Biju Patnaik', lat: 20.2444, lon: 85.8178 },
+  { code: 'SXR', name: 'Srinagar Intl', lat: 33.9871, lon: 74.7742 },
+  { code: 'VNS', name: 'Varanasi - Lal Bahadur Shastri', lat: 25.4524, lon: 82.8593 },
+  { code: 'DXB', name: 'Dubai Intl', lat: 25.2528, lon: 55.3644 },
+  { code: 'SIN', name: 'Singapore Changi', lat: 1.3644, lon: 103.9915 },
+  { code: 'BKK', name: 'Bangkok Suvarnabhumi', lat: 13.6900, lon: 100.7501 },
+  { code: 'KUL', name: 'Kuala Lumpur Intl', lat: 2.7456, lon: 101.7099 },
+  { code: 'DOH', name: 'Doha - Hamad Intl', lat: 25.2731, lon: 51.6081 },
+  { code: 'AUH', name: 'Abu Dhabi Intl', lat: 24.4330, lon: 54.6511 },
+  { code: 'LHR', name: 'London Heathrow', lat: 51.4700, lon: -0.4543 },
+  { code: 'JFK', name: 'New York JFK', lat: 40.6413, lon: -73.7781 },
+  { code: 'IST', name: 'Istanbul Airport', lat: 41.2753, lon: 28.7519 },
+  { code: 'FRA', name: 'Frankfurt Intl', lat: 50.0379, lon: 8.5622 },
+  { code: 'CDG', name: 'Paris Charles de Gaulle', lat: 49.0097, lon: 2.5479 },
+  { code: 'HKG', name: 'Hong Kong Intl', lat: 22.3080, lon: 113.9185 },
+  { code: 'NRT', name: 'Tokyo Narita', lat: 35.7720, lon: 140.3929 },
+  { code: 'ICN', name: 'Seoul Incheon', lat: 37.4602, lon: 126.4407 },
+  { code: 'SYD', name: 'Sydney Kingsford Smith', lat: -33.9461, lon: 151.1772 },
+  { code: 'LAX', name: 'Los Angeles Intl', lat: 33.9416, lon: -118.4085 },
+  { code: 'ORD', name: 'Chicago O\'Hare', lat: 41.9742, lon: -87.9073 },
+  { code: 'YYZ', name: 'Toronto Pearson', lat: 43.6777, lon: -79.6248 },
+  { code: 'MCT', name: 'Muscat Intl', lat: 23.5933, lon: 58.2844 },
+  { code: 'CMB', name: 'Colombo Bandaranaike', lat: 7.1808, lon: 79.8841 },
+  { code: 'KTM', name: 'Kathmandu Tribhuvan', lat: 27.6966, lon: 85.3591 },
+  { code: 'DAC', name: 'Dhaka Shahjalal', lat: 23.8433, lon: 90.3978 },
+  { code: 'MLE', name: 'Male Velana Intl', lat: 4.1918, lon: 73.5290 },
+  { code: 'DPS', name: 'Bali Ngurah Rai', lat: -8.7482, lon: 115.1672 },
+  { code: 'AMS', name: 'Amsterdam Schiphol', lat: 52.3105, lon: 4.7683 },
+  { code: 'FCO', name: 'Rome Fiumicino', lat: 41.8003, lon: 12.2389 },
+  { code: 'BCN', name: 'Barcelona El Prat', lat: 41.2971, lon: 2.0785 },
+];
+
+// Populate airport dropdown
+(function populateBoardAirports() {
+  const sel = document.getElementById('board-airport');
+  if (!sel) return;
+  const groups = {};
+  airportCoords.forEach(a => {
+    const region = getRegion(a.code);
+    if (!groups[region]) groups[region] = [];
+    groups[region].push(a);
+  });
+  for (const [region, aps] of Object.entries(groups)) {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = region;
+    aps.sort((a, b) => a.name.localeCompare(b.name));
+    aps.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.code;
+      opt.textContent = `${a.code} - ${a.name}`;
+      optgroup.appendChild(opt);
+    });
+    sel.appendChild(optgroup);
+  }
+  function getRegion(code) {
+    const india = ['DEL','BOM','BLR','MAA','HYD','CCU','GOI','COK','AMD','PNQ','JAI','LKO','TRV','GAU','VTZ','IXC','PAT','BBI','SXR','VNS'];
+    const me = ['DXB','AUH','DOH','MCT'];
+    const sea = ['SIN','BKK','KUL','HKG','DPS'];
+    const europe = ['LHR','FRA','CDG','AMS','FCO','BCN','IST'];
+    const americas = ['JFK','LAX','ORD','YYZ'];
+    const eastAsia = ['NRT','ICN'];
+    if (india.includes(code)) return 'India';
+    if (me.includes(code)) return 'Middle East';
+    if (sea.includes(code)) return 'South & SE Asia';
+    if (europe.includes(code)) return 'Europe';
+    if (americas.includes(code)) return 'Americas';
+    if (eastAsia.includes(code)) return 'East Asia';
+    return 'Other';
+  }
+})();
+
+// Geolocation — find nearest airport
+function detectNearestAirport() {
+  if (!navigator.geolocation) {
+    showBoardError('Geolocation not supported. Select an airport manually.');
+    return;
+  }
+  document.getElementById('board-content').innerHTML = '<div class="board-loading"><div class="spinner"></div><p>Detecting your location...</p></div>';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      let nearest = null, minDist = Infinity;
+      for (const ap of airportCoords) {
+        const d = haversine(lat, lon, ap.lat, ap.lon);
+        if (d < minDist) { minDist = d; nearest = ap; }
+      }
+      if (nearest) {
+        document.getElementById('board-airport').value = nearest.code;
+        boardAirportChanged();
+      }
+    },
+    err => {
+      showBoardError('Location access denied. Select an airport from the dropdown.');
+    },
+    { enableHighAccuracy: false, timeout: 10000 }
+  );
 }
 
-// ============================================================
-// FLIGHT TRACKING — Aviationstack
-// ============================================================
-let trackMode = 'flight';
-
-function setTrackMode(mode) {
-  trackMode = mode;
-  document.querySelectorAll('.track-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-  document.getElementById('track-flight-form').style.display = mode === 'flight' ? 'flex' : 'none';
-  document.getElementById('track-airport-form').style.display = mode === 'airport' ? 'flex' : 'none';
-  document.getElementById('track-airline-form').style.display = mode === 'airline' ? 'flex' : 'none';
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-function showTrackLoading() {
-  const section = document.getElementById('track-results-section');
-  section.style.display = 'block';
-  document.getElementById('track-results-content').innerHTML = '<div class="track-loading"><div class="spinner"></div><p>Fetching real-time flight data...</p></div>';
+function setBoardType(type) {
+  boardType = type;
+  document.querySelectorAll('.board-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.btype === type));
+  if (boardCurrentAirport) loadBoardData();
 }
 
-function showTrackError(msg) {
-  const section = document.getElementById('track-results-section');
-  section.style.display = 'block';
-  document.getElementById('track-results-content').innerHTML = `<div class="track-error">${msg}</div>`;
+function boardAirportChanged() {
+  const code = document.getElementById('board-airport').value;
+  if (!code) return;
+  boardCurrentAirport = code;
+  loadBoardData();
 }
 
-function formatTrackTime(isoStr) {
+function showBoardError(msg) {
+  document.getElementById('board-content').innerHTML = `<div class="board-error">${msg}</div>`;
+}
+
+function formatBoardTime(isoStr) {
   if (!isoStr) return '--:--';
   try {
     const d = new Date(isoStr);
-    return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
-  } catch { return isoStr; }
+    return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+  } catch { return '--:--'; }
 }
 
-function formatTrackDate(isoStr) {
-  if (!isoStr) return '';
-  try {
-    const d = new Date(isoStr);
-    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-  } catch { return ''; }
-}
-
-function getStatusClass(status) {
+function boardStatusClass(status) {
   const s = (status || '').toLowerCase();
-  if (s === 'active') return 'status-active';
-  if (s === 'scheduled') return 'status-scheduled';
-  if (s === 'landed') return 'status-landed';
-  if (s === 'cancelled') return 'status-cancelled';
-  if (s === 'incident') return 'status-incident';
-  if (s === 'diverted') return 'status-diverted';
-  return 'status-unknown';
+  if (s === 'active') return 'bs-active';
+  if (s === 'scheduled') return 'bs-scheduled';
+  if (s === 'landed') return 'bs-landed';
+  if (s === 'cancelled') return 'bs-cancelled';
+  if (s === 'diverted') return 'bs-diverted';
+  if (s === 'incident') return 'bs-incident';
+  return 'bs-unknown';
 }
 
-function renderTrackResults(data, title) {
-  const section = document.getElementById('track-results-section');
-  section.style.display = 'block';
-  const container = document.getElementById('track-results-content');
+function boardStatusLabel(status, dep, arr) {
+  const s = (status || '').toLowerCase();
+  if (s === 'active') return 'IN FLIGHT';
+  if (s === 'landed') return 'LANDED';
+  if (s === 'cancelled') return 'CANCELLED';
+  if (s === 'diverted') return 'DIVERTED';
+  if (s === 'incident') return 'INCIDENT';
+  if (s === 'scheduled') {
+    if (dep.gate) return 'GATE OPEN';
+    return 'ON TIME';
+  }
+  return (status || 'UNKNOWN').toUpperCase();
+}
 
+function renderBoard(data) {
+  const container = document.getElementById('board-content');
+  const statsEl = document.getElementById('board-stats');
   const flights = data.data || [];
   const total = data.pagination?.total || flights.length;
 
   if (flights.length === 0) {
-    container.innerHTML = '<div class="track-empty">No flights found. Check the flight number or airport code and try again.</div>';
+    container.innerHTML = '<div class="board-empty">No flights found for this airport right now.</div>';
+    statsEl.innerHTML = '';
     return;
   }
 
-  // Count statuses
+  // Sort by scheduled time
+  flights.sort((a, b) => {
+    const key = boardType === 'departure' ? 'departure' : 'arrival';
+    const tA = a[key]?.scheduled || '';
+    const tB = b[key]?.scheduled || '';
+    return tA.localeCompare(tB);
+  });
+
+  // Stats
   const statusCounts = {};
+  let delayed = 0;
   flights.forEach(f => {
     const s = f.flight_status || 'unknown';
     statusCounts[s] = (statusCounts[s] || 0) + 1;
+    if ((f.departure?.delay && f.departure.delay > 0) || (f.arrival?.delay && f.arrival.delay > 0)) delayed++;
   });
-
-  let html = `<h2>${title}</h2>`;
-  html += '<div class="track-summary-bar">';
-  html += `<div class="track-stat"><span class="stat-num">${total}</span>Total Flights</div>`;
-  for (const [status, count] of Object.entries(statusCounts)) {
-    html += `<div class="track-stat"><span class="stat-num">${count}</span>${status.charAt(0).toUpperCase() + status.slice(1)}</div>`;
+  let statsHtml = `<div class="board-stat-chip"><strong>${total}</strong>Total</div>`;
+  for (const [s, c] of Object.entries(statusCounts)) {
+    statsHtml += `<div class="board-stat-chip"><strong>${c}</strong>${s.charAt(0).toUpperCase() + s.slice(1)}</div>`;
   }
-  html += '</div>';
+  if (delayed) statsHtml += `<div class="board-stat-chip"><strong>${delayed}</strong>Delayed</div>`;
+  statsEl.innerHTML = statsHtml;
+
+  // Determine columns based on type
+  const isDep = boardType === 'departure';
+  const destLabel = isDep ? 'DESTINATION' : 'ORIGIN';
+
+  let html = `<table class="board-table">
+    <thead><tr>
+      <th>TIME</th>
+      <th>FLIGHT</th>
+      <th>AIRLINE</th>
+      <th>${destLabel}</th>
+      <th>TERMINAL</th>
+      <th>GATE</th>
+      <th>STATUS</th>
+    </tr></thead><tbody>`;
 
   for (const f of flights) {
     const dep = f.departure || {};
     const arr = f.arrival || {};
     const airline = f.airline || {};
     const flight = f.flight || {};
-    const live = f.live;
     const status = f.flight_status || 'unknown';
 
-    const depScheduled = formatTrackTime(dep.scheduled);
-    const depActual = dep.actual ? formatTrackTime(dep.actual) : (dep.estimated ? formatTrackTime(dep.estimated) : '');
-    const arrScheduled = formatTrackTime(arr.scheduled);
-    const arrActual = arr.actual ? formatTrackTime(arr.actual) : (arr.estimated ? formatTrackTime(arr.estimated) : '');
-    const depDelay = dep.delay ? `+${dep.delay}min` : '';
-    const arrDelay = arr.delay ? `+${arr.delay}min` : '';
-    const dateStr = f.flight_date || formatTrackDate(dep.scheduled);
+    const localPoint = isDep ? dep : arr;
+    const remotePoint = isDep ? arr : dep;
+    const scheduled = formatBoardTime(localPoint.scheduled);
+    const actual = localPoint.actual ? formatBoardTime(localPoint.actual) : (localPoint.estimated ? formatBoardTime(localPoint.estimated) : '');
+    const delay = localPoint.delay;
+    const terminal = localPoint.terminal || '-';
+    const gate = localPoint.gate || '-';
+    const remoteCode = remotePoint.iata || '---';
+    const remoteName = remotePoint.airport || '';
+    const statusLabel = boardStatusLabel(status, dep, arr);
 
-    let extraInfo = '';
-    if (dep.terminal) extraInfo += `T${dep.terminal}`;
-    if (dep.gate) extraInfo += ` Gate ${dep.gate}`;
-    if (arr.terminal) extraInfo += ` &rarr; T${arr.terminal}`;
-    if (arr.baggage) extraInfo += ` Bag:${arr.baggage}`;
-    if (live) {
-      extraInfo += ` | ALT: ${Math.round(live.altitude || 0)}m, Speed: ${Math.round(live.speed_horizontal || 0)}km/h`;
-      if (live.is_ground) extraInfo += ' (On Ground)';
-    }
-    if (flight.codeshared) {
-      extraInfo += ` | Codeshare: ${(flight.codeshared.airline_iata || '').toUpperCase()}${flight.codeshared.flight_number || ''}`;
+    let timeCell = `<span class="col-time">${scheduled}</span>`;
+    if (delay && delay > 0) {
+      timeCell += `<span class="delay-badge">+${delay}</span>`;
     }
 
-    html += `
-    <div class="track-flight-card">
-      <div class="track-flight-id">
-        <span class="flight-code">${flight.iata || flight.icao || '---'}</span>
-        <span class="airline-name">${airline.name || ''}</span>
-        <span style="font-size:0.7rem; color:#888; margin-top:2px;">${dateStr}</span>
-      </div>
-      <div class="track-flight-route">
-        <div class="track-airport">
-          <span class="airport-code">${dep.iata || '---'}</span>
-          <span class="airport-name">${dep.airport || ''}</span>
-          <span class="time-scheduled">${depScheduled}</span>
-          ${depActual ? `<span class="time-actual">Act: ${depActual}</span>` : ''}
-          ${depDelay ? `<span class="time-delay">Delay: ${depDelay}</span>` : ''}
-        </div>
-        <div class="route-line"></div>
-        <div class="track-airport">
-          <span class="airport-code">${arr.iata || '---'}</span>
-          <span class="airport-name">${arr.airport || ''}</span>
-          <span class="time-scheduled">${arrScheduled}</span>
-          ${arrActual ? `<span class="time-actual">Act: ${arrActual}</span>` : ''}
-          ${arrDelay ? `<span class="time-delay">Delay: ${arrDelay}</span>` : ''}
-        </div>
-      </div>
-      <div>
-        <span class="flight-status-badge ${getStatusClass(status)}">${status}</span>
-        ${extraInfo ? `<div class="track-extra-info">${extraInfo}</div>` : ''}
-      </div>
-    </div>`;
+    html += `<tr class="flip-in">
+      <td>${timeCell}</td>
+      <td class="col-flight">${flight.iata || flight.icao || '---'}</td>
+      <td class="col-airline">${airline.name || ''}</td>
+      <td><span class="col-dest">${remoteCode}</span> <span class="col-airline">${remoteName}</span></td>
+      <td class="col-terminal">${terminal}</td>
+      <td class="col-gate">${gate}</td>
+      <td><span class="board-status-badge ${boardStatusClass(status)}">${statusLabel}</span></td>
+    </tr>`;
   }
 
+  html += '</tbody></table>';
   container.innerHTML = html;
 }
 
-async function trackFlight() {
-  const input = document.getElementById('track-flight-input').value.trim().toUpperCase();
-  if (!input) return showTrackError('Enter a flight number (e.g. AI101)');
-  showTrackLoading();
+async function loadBoardData(silent) {
+  const code = boardCurrentAirport;
+  if (!code) return;
+
+  const ap = airportCoords.find(a => a.code === code);
+  const label = ap ? ap.name : code;
+  const typeLabel = boardType === 'departure' ? 'DEPARTURES' : 'ARRIVALS';
+  document.getElementById('board-title').textContent = `${code} ${typeLabel}`;
+
+  if (!silent) {
+    document.getElementById('board-content').innerHTML = '<div class="board-loading"><div class="spinner"></div><p>LOADING FLIGHT DATA...</p></div>';
+  }
+
+  try {
+    const resp = await fetch(`/api/track/airport?iata=${encodeURIComponent(code)}&type=${boardType}`);
+    const data = await resp.json();
+    if (data.error) {
+      showBoardError(data.error);
+      return;
+    }
+    boardLastData = data;
+    renderBoard(data);
+    // Show live indicator
+    document.getElementById('board-live-status').style.display = 'flex';
+    const now = new Date();
+    document.getElementById('board-refresh-text').textContent = `LIVE - ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
+  } catch (err) {
+    showBoardError('Failed to load flight data: ' + err.message);
+  }
+
+  // Schedule next refresh
+  clearInterval(boardRefreshTimer);
+  boardRefreshTimer = setInterval(() => loadBoardData(true), BOARD_REFRESH_INTERVAL);
+}
+
+// Track individual flight from the board
+async function boardTrackFlight() {
+  const input = document.getElementById('board-flight-input').value.trim().toUpperCase();
+  if (!input) return;
+  const container = document.getElementById('board-content');
+  container.innerHTML = '<div class="board-loading"><div class="spinner"></div><p>TRACKING FLIGHT...</p></div>';
+  clearInterval(boardRefreshTimer);
+
   try {
     const resp = await fetch(`/api/track?flight_iata=${encodeURIComponent(input)}`);
     const data = await resp.json();
-    if (data.error) return showTrackError(data.error);
-    renderTrackResults(data, `Flight ${input}`);
+    if (data.error) { showBoardError(data.error); return; }
+    const flights = data.data || [];
+    if (flights.length === 0) {
+      container.innerHTML = '<div class="board-empty">Flight not found. Check the flight number and try again.</div>';
+      return;
+    }
+    document.getElementById('board-title').textContent = `FLIGHT ${input}`;
+    document.getElementById('board-stats').innerHTML = '';
+    document.getElementById('board-live-status').style.display = 'flex';
+    const now = new Date();
+    document.getElementById('board-refresh-text').textContent = `LIVE - ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
+
+    let html = '<table class="board-table"><thead><tr><th>DATE</th><th>FLIGHT</th><th>AIRLINE</th><th>FROM</th><th>TO</th><th>DEP TIME</th><th>ARR TIME</th><th>GATE</th><th>STATUS</th></tr></thead><tbody>';
+    for (const f of flights) {
+      const dep = f.departure || {};
+      const arr = f.arrival || {};
+      const airline = f.airline || {};
+      const flight = f.flight || {};
+      const status = f.flight_status || 'unknown';
+      const delay = dep.delay;
+
+      let depTime = formatBoardTime(dep.scheduled);
+      if (delay && delay > 0) depTime += ` <span class="delay-badge">+${delay}</span>`;
+      const arrTime = formatBoardTime(arr.scheduled);
+      const statusLabel = boardStatusLabel(status, dep, arr);
+
+      html += `<tr class="flip-in">
+        <td class="col-time">${f.flight_date || ''}</td>
+        <td class="col-flight">${flight.iata || '---'}</td>
+        <td class="col-airline">${airline.name || ''}</td>
+        <td><span class="col-dest">${dep.iata || '---'}</span> <span class="col-airline">${dep.airport || ''}</span></td>
+        <td><span class="col-dest">${arr.iata || '---'}</span> <span class="col-airline">${arr.airport || ''}</span></td>
+        <td>${depTime}</td>
+        <td>${arrTime}</td>
+        <td class="col-gate">${dep.gate || dep.terminal ? 'T' + dep.terminal : '-'}</td>
+        <td><span class="board-status-badge ${boardStatusClass(status)}">${statusLabel}</span></td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+    container.innerHTML = html;
+
+    // Auto-refresh flight tracking too
+    boardRefreshTimer = setInterval(async () => {
+      try {
+        const r = await fetch(`/api/track?flight_iata=${encodeURIComponent(input)}`);
+        const d = await r.json();
+        if (!d.error && d.data?.length) {
+          // Re-render silently
+          boardTrackFlightRender(d, input);
+        }
+      } catch {}
+    }, BOARD_REFRESH_INTERVAL);
   } catch (err) {
-    showTrackError('Failed to track flight: ' + err.message);
+    showBoardError('Failed to track flight: ' + err.message);
   }
 }
-
-async function trackAirport() {
-  const iata = document.getElementById('track-airport-input').value.trim().toUpperCase();
-  if (!iata) return showTrackError('Enter an airport code (e.g. DEL)');
-  const type = document.getElementById('track-airport-type').value;
-  const status = document.getElementById('track-airport-status').value;
-  showTrackLoading();
-  try {
-    let url = `/api/track/airport?iata=${encodeURIComponent(iata)}&type=${type}`;
-    if (status) url += `&status=${status}`;
-    const resp = await fetch(url);
-    const data = await resp.json();
-    if (data.error) return showTrackError(data.error);
-    const typeLabel = type === 'arrival' ? 'Arrivals' : 'Departures';
-    renderTrackResults(data, `${iata} ${typeLabel}${status ? ` (${status})` : ''}`);
-  } catch (err) {
-    showTrackError('Failed to track airport: ' + err.message);
+function boardTrackFlightRender(data, input) {
+  // Lightweight re-render for auto-refresh of tracked flight
+  const flights = data.data || [];
+  if (!flights.length) return;
+  const now = new Date();
+  document.getElementById('board-refresh-text').textContent = `LIVE - ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
+  let html = '<table class="board-table"><thead><tr><th>DATE</th><th>FLIGHT</th><th>AIRLINE</th><th>FROM</th><th>TO</th><th>DEP TIME</th><th>ARR TIME</th><th>GATE</th><th>STATUS</th></tr></thead><tbody>';
+  for (const f of flights) {
+    const dep = f.departure || {};
+    const arr = f.arrival || {};
+    const airline = f.airline || {};
+    const flight = f.flight || {};
+    const status = f.flight_status || 'unknown';
+    const delay = dep.delay;
+    let depTime = formatBoardTime(dep.scheduled);
+    if (delay && delay > 0) depTime += ` <span class="delay-badge">+${delay}</span>`;
+    html += `<tr class="flip-in"><td class="col-time">${f.flight_date || ''}</td><td class="col-flight">${flight.iata || '---'}</td><td class="col-airline">${airline.name || ''}</td><td><span class="col-dest">${dep.iata || '---'}</span></td><td><span class="col-dest">${arr.iata || '---'}</span></td><td>${depTime}</td><td>${formatBoardTime(arr.scheduled)}</td><td class="col-gate">${dep.gate || '-'}</td><td><span class="board-status-badge ${boardStatusClass(status)}">${boardStatusLabel(status, dep, arr)}</span></td></tr>`;
   }
+  html += '</tbody></table>';
+  document.getElementById('board-content').innerHTML = html;
 }
 
-async function trackAirline() {
-  const iata = document.getElementById('track-airline-input').value.trim().toUpperCase();
-  if (!iata) return showTrackError('Enter an airline code (e.g. AI)');
-  const status = document.getElementById('track-airline-status').value;
-  showTrackLoading();
-  try {
-    let url = `/api/track/airline?iata=${encodeURIComponent(iata)}&status=${status}`;
-    const resp = await fetch(url);
-    const data = await resp.json();
-    if (data.error) return showTrackError(data.error);
-    const airlineName = (data.data && data.data[0]?.airline?.name) || iata;
-    renderTrackResults(data, `${airlineName} Flights${status ? ` (${status})` : ''}`);
-  } catch (err) {
-    showTrackError('Failed to track airline: ' + err.message);
-  }
-}
-
-// Enter key support for track inputs
+// Enter key for flight search on board
 document.addEventListener('DOMContentLoaded', function() {
-  const flightInput = document.getElementById('track-flight-input');
-  const airportInput = document.getElementById('track-airport-input');
-  const airlineInput = document.getElementById('track-airline-input');
-  if (flightInput) flightInput.addEventListener('keydown', e => { if (e.key === 'Enter') trackFlight(); });
-  if (airportInput) airportInput.addEventListener('keydown', e => { if (e.key === 'Enter') trackAirport(); });
-  if (airlineInput) airlineInput.addEventListener('keydown', e => { if (e.key === 'Enter') trackAirline(); });
+  const fi = document.getElementById('board-flight-input');
+  if (fi) fi.addEventListener('keydown', e => { if (e.key === 'Enter') boardTrackFlight(); });
 });
+
+// Clean up timer when leaving track tab
+function switchMainTab(tab) {
+  document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
+  if (tab === 'track' && !boardCurrentAirport) detectNearestAirport();
+  if (tab !== 'track' && boardRefreshTimer) { clearInterval(boardRefreshTimer); boardRefreshTimer = null; }
+}
 </script>
 </body>
 </html>
