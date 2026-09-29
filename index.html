@@ -1079,19 +1079,21 @@ body {
 .tab-panel.active { display: block; }
 
 /* ============================================================
-   AIRPORT BOARD — Solari flip-board style
+   AIRPORT BOARD — Realistic 3D Split-Flap / Solari Board
    ============================================================ */
 .board-wrap {
-  background: #1a1a1a;
+  background: #0c0c0c;
   min-height: calc(100vh - 120px);
   padding: 0 0 40px;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 /* Airport selector bar */
 .airport-selector {
-  background: #111;
-  border-bottom: 1px solid #333;
+  background: #0a0a0a;
+  border-bottom: 2px solid #1a1a1a;
   padding: 14px 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 .airport-selector-inner {
   max-width: 1200px;
@@ -1111,9 +1113,9 @@ body {
   text-transform: uppercase;
 }
 .airport-select {
-  background: #222;
+  background: #1a1a1a;
   color: #fff;
-  border: 1px solid #444;
+  border: 1px solid #333;
   padding: 8px 14px;
   border-radius: 4px;
   font-family: 'Courier New', Courier, monospace;
@@ -1122,9 +1124,9 @@ body {
 }
 .airport-select:focus { outline: none; border-color: #ffc107; }
 .locate-btn {
-  background: #333;
+  background: #1a1a1a;
   color: #4fc3f7;
-  border: 1px solid #555;
+  border: 1px solid #333;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
@@ -1133,7 +1135,7 @@ body {
   font-weight: 700;
   transition: background 0.2s;
 }
-.locate-btn:hover { background: #444; }
+.locate-btn:hover { background: #2a2a2a; }
 .board-status {
   margin-left: auto;
   display: flex;
@@ -1154,19 +1156,16 @@ body {
   50% { opacity: 0.7; box-shadow: 0 0 8px 4px rgba(0,230,118,0.2); }
 }
 
-/* Flight number search bar */
+/* Flight search bar */
 .flight-search-bar {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 12px 20px 0;
   display: flex;
   gap: 8px;
   align-items: center;
 }
 .flight-search-bar input {
-  background: #222;
+  background: #1a1a1a;
   color: #fff;
-  border: 1px solid #444;
+  border: 1px solid #333;
   padding: 8px 14px;
   border-radius: 4px;
   font-family: 'Courier New', Courier, monospace;
@@ -1175,10 +1174,10 @@ body {
   text-transform: uppercase;
 }
 .flight-search-bar input:focus { outline: none; border-color: #ffc107; }
-.flight-search-bar input::placeholder { color: #666; }
+.flight-search-bar input::placeholder { color: #555; }
 .flight-search-btn {
   background: #ffc107;
-  color: #111;
+  color: #000;
   border: none;
   padding: 8px 18px;
   border-radius: 4px;
@@ -1207,20 +1206,20 @@ body {
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(255,193,7,0.3);
 }
 .board-toggle {
   display: flex;
-  gap: 0;
-  background: #222;
+  background: #111;
   border-radius: 4px;
-  border: 1px solid #444;
+  border: 1px solid #333;
   overflow: hidden;
 }
 .board-toggle-btn {
   padding: 10px 24px;
   border: none;
   background: transparent;
-  color: #888;
+  color: #666;
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.9rem;
   font-weight: 700;
@@ -1229,129 +1228,238 @@ body {
   text-transform: uppercase;
   transition: all 0.2s;
 }
-.board-toggle-btn.active {
-  background: #ffc107;
-  color: #111;
-}
-.board-toggle-btn:hover:not(.active) { color: #fff; background: #333; }
+.board-toggle-btn.active { background: #ffc107; color: #000; }
+.board-toggle-btn:hover:not(.active) { color: #ccc; background: #1a1a1a; }
 
-/* The board table */
+/* ---- THE SPLIT-FLAP BOARD ---- */
 .board-container {
   max-width: 1200px;
   margin: 16px auto 0;
   padding: 0 20px;
   overflow-x: auto;
 }
-.board-table {
+.solari-board {
   width: 100%;
-  border-collapse: collapse;
-  font-family: 'Courier New', Courier, monospace;
-  background: #111;
-  border-radius: 6px;
+  background: #0e0e0e;
+  border: 3px solid #1c1c1c;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 30px rgba(0,0,0,0.8), 0 8px 40px rgba(0,0,0,0.6);
   overflow: hidden;
 }
-.board-table thead th {
-  background: #1a1a1a;
-  color: #ffc107;
-  font-size: 0.75rem;
+
+/* Column headers */
+.solari-header {
+  display: grid;
+  grid-template-columns: 80px 90px 1fr 1fr 60px 70px 140px;
+  gap: 3px;
+  padding: 10px 8px 8px;
+  background: #0a0a0a;
+  border-bottom: 2px solid #1c1c1c;
+}
+.solari-header span {
+  color: #b8860b;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 12px 14px;
-  text-align: left;
-  border-bottom: 2px solid #333;
-  white-space: nowrap;
-}
-.board-table tbody tr {
-  border-bottom: 1px solid #222;
-  transition: background 0.3s;
-}
-.board-table tbody tr:hover { background: #1a1a2a; }
-.board-table tbody td {
-  padding: 11px 14px;
-  color: #e0e0e0;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  vertical-align: middle;
-}
-.board-table .col-time {
-  color: #fff;
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: 1px;
-}
-.board-table .col-flight {
-  color: #4fc3f7;
-  font-weight: 700;
-}
-.board-table .col-dest {
-  color: #fff;
-  font-weight: 600;
-}
-.board-table .col-airline {
-  color: #aaa;
-  font-size: 0.8rem;
-}
-.board-table .col-gate {
-  color: #ffc107;
-  font-weight: 700;
-  text-align: center;
-}
-.board-table .col-terminal {
-  color: #aaa;
-  text-align: center;
+  padding: 0 4px;
 }
 
-/* Status badges on the board */
-.board-status-badge {
+/* Each row */
+.solari-row {
+  display: grid;
+  grid-template-columns: 80px 90px 1fr 1fr 60px 70px 140px;
+  gap: 3px;
+  padding: 3px 8px;
+  border-bottom: 1px solid #111;
+  perspective: 400px;
+}
+.solari-row:hover { background: rgba(255,193,7,0.03); }
+
+/* Individual flap cell — the core 3D element */
+.flap-cell {
+  display: inline-flex;
+  gap: 1px;
+  align-items: center;
+  padding: 2px 0;
+}
+.flap-char {
+  position: relative;
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 3px;
-  font-size: 0.75rem;
+  width: 14px;
+  height: 26px;
+  perspective: 200px;
+  overflow: visible;
+}
+.flap-char-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #1a1a1a;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+/* Top half */
+.flap-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #222 0%, #181818 100%);
+  border-bottom: 1px solid #000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 2px 2px 0 0;
+}
+.flap-top span {
+  display: block;
+  line-height: 26px;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
   font-family: 'Courier New', Courier, monospace;
+  color: #e8e8e8;
+  transform: translateY(50%);
 }
-.bs-scheduled { background: #1a237e; color: #90caf9; }
-.bs-active { background: #1b5e20; color: #69f0ae; }
-.bs-landed { background: #4a148c; color: #ce93d8; }
-.bs-cancelled { background: #b71c1c; color: #ffcdd2; }
-.bs-diverted { background: #e65100; color: #ffcc80; }
-.bs-incident { background: #bf360c; color: #ffab91; }
-.bs-unknown { background: #333; color: #888; }
-
-.delay-badge {
-  display: inline-block;
-  margin-left: 6px;
-  padding: 2px 8px;
-  background: #ff6f00;
-  color: #fff;
-  border-radius: 3px;
-  font-size: 0.7rem;
+/* Bottom half */
+.flap-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #151515 0%, #111 100%);
+  border-top: 1px solid #2a2a2a;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-radius: 0 0 2px 2px;
+}
+.flap-bottom span {
+  display: block;
+  line-height: 26px;
+  font-size: 16px;
   font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  color: #e8e8e8;
+  transform: translateY(-50%);
 }
 
-/* Flip animation for row updates */
-.board-table tbody tr.flip-in {
-  animation: flipIn 0.4s ease-out;
+/* Color variants */
+.flap-yellow .flap-top span, .flap-yellow .flap-bottom span { color: #ffc107; }
+.flap-cyan .flap-top span, .flap-cyan .flap-bottom span { color: #4fc3f7; }
+.flap-green .flap-top span, .flap-green .flap-bottom span { color: #69f0ae; }
+.flap-red .flap-top span, .flap-red .flap-bottom span { color: #ff5252; }
+.flap-orange .flap-top span, .flap-orange .flap-bottom span { color: #ff9800; }
+.flap-white .flap-top span, .flap-white .flap-bottom span { color: #fff; }
+.flap-dim .flap-top span, .flap-dim .flap-bottom span { color: #888; }
+
+/* 3D FLIP ANIMATION */
+.flap-char.flipping .flap-top-flip {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #222 0%, #181818 100%);
+  border-bottom: 1px solid #000;
+  border-radius: 2px 2px 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transform-origin: bottom center;
+  animation: flapDown 0.15s ease-in forwards;
+  z-index: 3;
+  backface-visibility: hidden;
 }
-@keyframes flipIn {
-  0% { transform: rotateX(90deg); opacity: 0; }
-  100% { transform: rotateX(0deg); opacity: 1; }
+.flap-char.flipping .flap-top-flip span {
+  display: block;
+  line-height: 26px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  color: #e8e8e8;
+  transform: translateY(50%);
+}
+.flap-char.flipping .flap-bottom-flip {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #151515 0%, #111 100%);
+  border-top: 1px solid #2a2a2a;
+  border-radius: 0 0 2px 2px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  transform-origin: top center;
+  animation: flapUp 0.15s 0.1s ease-out forwards;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: rotateX(90deg);
+}
+.flap-char.flipping .flap-bottom-flip span {
+  display: block;
+  line-height: 26px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  color: #e8e8e8;
+  transform: translateY(-50%);
+}
+@keyframes flapDown {
+  0% { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
+}
+@keyframes flapUp {
+  0% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); box-shadow: 0 -2px 4px rgba(0,0,0,0.2); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Board loading / error / empty states */
+/* Status cells on the board — wider flap */
+.flap-status {
+  display: inline-flex;
+  gap: 1px;
+  padding: 3px 6px;
+  border-radius: 3px;
+}
+.flap-status .flap-char { width: 11px; height: 22px; }
+.flap-status .flap-top span, .flap-status .flap-bottom span,
+.flap-status .flap-top-flip span, .flap-status .flap-bottom-flip span {
+  font-size: 13px;
+  line-height: 22px;
+}
+.status-bg-active { background: rgba(27,94,32,0.4); }
+.status-bg-scheduled { background: rgba(26,35,126,0.4); }
+.status-bg-landed { background: rgba(74,20,140,0.3); }
+.status-bg-cancelled { background: rgba(183,28,28,0.4); }
+.status-bg-diverted { background: rgba(230,81,0,0.3); }
+.status-bg-unknown { background: rgba(50,50,50,0.4); }
+
+/* Delay indicator */
+.delay-pip {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 6px;
+  background: #cc5500;
+  color: #fff;
+  border-radius: 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  vertical-align: middle;
+}
+
+/* Board loading / error / empty */
 .board-loading {
   text-align: center;
   padding: 60px 20px;
-  color: #888;
+  color: #666;
   font-family: 'Courier New', Courier, monospace;
 }
 .board-loading .spinner {
   width: 40px; height: 40px;
-  border: 3px solid #333;
+  border: 3px solid #222;
   border-top-color: #ffc107;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -1361,9 +1469,9 @@ body {
   max-width: 1200px;
   margin: 20px auto;
   padding: 16px 20px;
-  background: #3e1a00;
-  border: 1px solid #ff6f00;
-  color: #ffcc80;
+  background: #2a0a00;
+  border: 1px solid #662200;
+  color: #ff9966;
   border-radius: 4px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.85rem;
@@ -1371,33 +1479,30 @@ body {
 .board-empty {
   text-align: center;
   padding: 60px 20px;
-  color: #666;
+  color: #555;
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.95rem;
 }
 
-/* Board stats bar */
+/* Stats bar */
 .board-stats {
   max-width: 1200px;
   margin: 12px auto 0;
   padding: 0 20px;
   display: flex;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 .board-stat-chip {
-  background: #222;
-  border: 1px solid #333;
+  background: #111;
+  border: 1px solid #222;
   padding: 6px 14px;
   border-radius: 4px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.8rem;
-  color: #aaa;
+  color: #888;
 }
-.board-stat-chip strong {
-  color: #ffc107;
-  margin-right: 4px;
-}
+.board-stat-chip strong { color: #ffc107; margin-right: 4px; }
 
 @media (max-width: 768px) {
   .main-tab-btn { padding: 12px 16px; font-size: 0.85rem; }
@@ -1406,9 +1511,11 @@ body {
   .board-status { margin-left: 0; }
   .board-title { font-size: 1.1rem; }
   .board-toggle-btn { padding: 8px 14px; font-size: 0.8rem; }
-  .board-table { font-size: 0.8rem; }
-  .board-table thead th { padding: 10px 8px; font-size: 0.65rem; }
-  .board-table tbody td { padding: 9px 8px; font-size: 0.8rem; }
+  .solari-header, .solari-row { grid-template-columns: 60px 70px 1fr 1fr 40px 50px 100px; font-size: 0.75rem; }
+  .flap-char { width: 10px; height: 20px; }
+  .flap-top span, .flap-bottom span { font-size: 12px; line-height: 20px; }
+  .flap-status .flap-char { width: 8px; height: 18px; }
+  .flap-status .flap-top span, .flap-status .flap-bottom span { font-size: 10px; line-height: 18px; }
   .flight-search-bar { flex-wrap: wrap; }
   .flight-search-bar input { width: 100%; }
 }
@@ -3452,7 +3559,51 @@ function boardStatusLabel(status, dep, arr) {
   return (status || 'UNKNOWN').toUpperCase();
 }
 
-function renderBoard(data) {
+// ---- Split-flap character builder ----
+function flapChars(text, len, colorClass, animate, delay) {
+  const t = String(text || '').toUpperCase().padEnd(len).substring(0, len);
+  let html = `<div class="flap-cell">`;
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i] === ' ' ? '\u00A0' : t[i];
+    const animClass = animate ? ' flipping' : '';
+    const animDelay = animate ? ` style="animation-delay:${(delay||0) + i * 30}ms"` : '';
+    html += `<div class="flap-char ${colorClass || ''}${animClass}">
+      <div class="flap-char-inner">
+        <div class="flap-top"><span>${ch}</span></div>
+        <div class="flap-bottom"><span>${ch}</span></div>
+      </div>
+      ${animate ? `<div class="flap-top-flip"${animDelay}><span>${ch}</span></div><div class="flap-bottom-flip"${animDelay}><span>${ch}</span></div>` : ''}
+    </div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function flapStatus(label, status) {
+  const bgClass = {
+    active: 'status-bg-active', scheduled: 'status-bg-scheduled',
+    landed: 'status-bg-landed', cancelled: 'status-bg-cancelled',
+    diverted: 'status-bg-diverted'
+  }[(status||'').toLowerCase()] || 'status-bg-unknown';
+  const colorClass = {
+    active: 'flap-green', scheduled: 'flap-cyan',
+    landed: 'flap-white', cancelled: 'flap-red',
+    diverted: 'flap-orange'
+  }[(status||'').toLowerCase()] || 'flap-dim';
+  const t = String(label).toUpperCase().padEnd(12).substring(0, 12);
+  let html = `<div class="flap-status ${bgClass}">`;
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i] === ' ' ? '\u00A0' : t[i];
+    html += `<div class="flap-char ${colorClass}"><div class="flap-char-inner"><div class="flap-top"><span>${ch}</span></div><div class="flap-bottom"><span>${ch}</span></div></div></div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+// Store previous board keys for diff-based animation
+let prevBoardKeys = new Set();
+
+function renderBoard(data, animate) {
   const container = document.getElementById('board-content');
   const statsEl = document.getElementById('board-stats');
   const flights = data.data || [];
@@ -3464,12 +3615,17 @@ function renderBoard(data) {
     return;
   }
 
-  // Sort by scheduled time
+  // Sort: current/upcoming flights first (by time relative to now)
+  const now = new Date();
   flights.sort((a, b) => {
     const key = boardType === 'departure' ? 'departure' : 'arrival';
-    const tA = a[key]?.scheduled || '';
-    const tB = b[key]?.scheduled || '';
-    return tA.localeCompare(tB);
+    const tA = new Date(a[key]?.scheduled || 0);
+    const tB = new Date(b[key]?.scheduled || 0);
+    // Put past flights (landed/departed) at the bottom, upcoming at top
+    const pastA = tA < now && (a.flight_status === 'landed' || a.flight_status === 'cancelled') ? 1 : 0;
+    const pastB = tB < now && (b.flight_status === 'landed' || b.flight_status === 'cancelled') ? 1 : 0;
+    if (pastA !== pastB) return pastA - pastB;
+    return tA - tB;
   });
 
   // Stats
@@ -3487,82 +3643,86 @@ function renderBoard(data) {
   if (delayed) statsHtml += `<div class="board-stat-chip"><strong>${delayed}</strong>Delayed</div>`;
   statsEl.innerHTML = statsHtml;
 
-  // Determine columns based on type
   const isDep = boardType === 'departure';
   const destLabel = isDep ? 'DESTINATION' : 'ORIGIN';
 
-  let html = `<table class="board-table">
-    <thead><tr>
-      <th>TIME</th>
-      <th>FLIGHT</th>
-      <th>AIRLINE</th>
-      <th>${destLabel}</th>
-      <th>TERMINAL</th>
-      <th>GATE</th>
-      <th>STATUS</th>
-    </tr></thead><tbody>`;
+  let html = `<div class="solari-board">
+    <div class="solari-header">
+      <span>TIME</span><span>FLIGHT</span><span>${destLabel}</span><span>AIRLINE</span><span>T</span><span>GATE</span><span>REMARKS</span>
+    </div>`;
 
+  const newKeys = new Set();
+  let rowIdx = 0;
   for (const f of flights) {
     const dep = f.departure || {};
     const arr = f.arrival || {};
     const airline = f.airline || {};
     const flight = f.flight || {};
     const status = f.flight_status || 'unknown';
-
     const localPoint = isDep ? dep : arr;
     const remotePoint = isDep ? arr : dep;
+
     const scheduled = formatBoardTime(localPoint.scheduled);
-    const actual = localPoint.actual ? formatBoardTime(localPoint.actual) : (localPoint.estimated ? formatBoardTime(localPoint.estimated) : '');
     const delay = localPoint.delay;
     const terminal = localPoint.terminal || '-';
     const gate = localPoint.gate || '-';
     const remoteCode = remotePoint.iata || '---';
-    const remoteName = remotePoint.airport || '';
+    const remoteName = (remotePoint.airport || '').replace(/International|Airport|Intl/gi, '').trim();
     const statusLabel = boardStatusLabel(status, dep, arr);
+    const flightCode = flight.iata || flight.icao || '---';
+    const airlineName = (airline.name || '').substring(0, 20);
 
-    let timeCell = `<span class="col-time">${scheduled}</span>`;
-    if (delay && delay > 0) {
-      timeCell += `<span class="delay-badge">+${delay}</span>`;
-    }
+    const rowKey = `${flightCode}-${scheduled}-${status}`;
+    newKeys.add(rowKey);
+    const isNew = animate && !prevBoardKeys.has(rowKey);
+    const rowDelay = rowIdx * 60;
 
-    html += `<tr class="flip-in">
-      <td>${timeCell}</td>
-      <td class="col-flight">${flight.iata || flight.icao || '---'}</td>
-      <td class="col-airline">${airline.name || ''}</td>
-      <td><span class="col-dest">${remoteCode}</span> <span class="col-airline">${remoteName}</span></td>
-      <td class="col-terminal">${terminal}</td>
-      <td class="col-gate">${gate}</td>
-      <td><span class="board-status-badge ${boardStatusClass(status)}">${statusLabel}</span></td>
-    </tr>`;
+    html += `<div class="solari-row">
+      ${flapChars(scheduled, 5, 'flap-white', isNew, rowDelay)}${delay > 0 ? `<span class="delay-pip">+${delay}</span>` : ''}
+      ${flapChars(flightCode, 7, 'flap-cyan', isNew, rowDelay + 50)}
+      ${flapChars(remoteCode + ' ' + remoteName, 18, 'flap-white', isNew, rowDelay + 100)}
+      ${flapChars(airlineName, 20, 'flap-dim', isNew, rowDelay + 150)}
+      ${flapChars(terminal, 3, 'flap-yellow', isNew, rowDelay + 200)}
+      ${flapChars(gate, 4, 'flap-yellow', isNew, rowDelay + 220)}
+      ${flapStatus(statusLabel, status)}
+    </div>`;
+    rowIdx++;
   }
 
-  html += '</tbody></table>';
+  html += '</div>';
   container.innerHTML = html;
+  prevBoardKeys = newKeys;
+
+  // Remove flip animation classes after animation completes
+  if (animate) {
+    setTimeout(() => {
+      container.querySelectorAll('.flipping').forEach(el => {
+        el.classList.remove('flipping');
+        const flips = el.querySelectorAll('.flap-top-flip, .flap-bottom-flip');
+        flips.forEach(f => f.remove());
+      });
+    }, flights.length * 60 + 500);
+  }
 }
 
 async function loadBoardData(silent) {
   const code = boardCurrentAirport;
   if (!code) return;
 
-  const ap = airportCoords.find(a => a.code === code);
-  const label = ap ? ap.name : code;
   const typeLabel = boardType === 'departure' ? 'DEPARTURES' : 'ARRIVALS';
   document.getElementById('board-title').textContent = `${code} ${typeLabel}`;
 
   if (!silent) {
     document.getElementById('board-content').innerHTML = '<div class="board-loading"><div class="spinner"></div><p>LOADING FLIGHT DATA...</p></div>';
+    prevBoardKeys = new Set();
   }
 
   try {
     const resp = await fetch(`/api/track/airport?iata=${encodeURIComponent(code)}&type=${boardType}`);
     const data = await resp.json();
-    if (data.error) {
-      showBoardError(data.error);
-      return;
-    }
+    if (data.error) { showBoardError(data.error); return; }
     boardLastData = data;
-    renderBoard(data);
-    // Show live indicator
+    renderBoard(data, silent);
     document.getElementById('board-live-status').style.display = 'flex';
     const now = new Date();
     document.getElementById('board-refresh-text').textContent = `LIVE - ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
@@ -3570,17 +3730,15 @@ async function loadBoardData(silent) {
     showBoardError('Failed to load flight data: ' + err.message);
   }
 
-  // Schedule next refresh
   clearInterval(boardRefreshTimer);
   boardRefreshTimer = setInterval(() => loadBoardData(true), BOARD_REFRESH_INTERVAL);
 }
 
-// Track individual flight from the board
+// Track individual flight
 async function boardTrackFlight() {
   const input = document.getElementById('board-flight-input').value.trim().toUpperCase();
   if (!input) return;
-  const container = document.getElementById('board-content');
-  container.innerHTML = '<div class="board-loading"><div class="spinner"></div><p>TRACKING FLIGHT...</p></div>';
+  document.getElementById('board-content').innerHTML = '<div class="board-loading"><div class="spinner"></div><p>TRACKING FLIGHT...</p></div>';
   clearInterval(boardRefreshTimer);
 
   try {
@@ -3588,80 +3746,50 @@ async function boardTrackFlight() {
     const data = await resp.json();
     if (data.error) { showBoardError(data.error); return; }
     const flights = data.data || [];
-    if (flights.length === 0) {
-      container.innerHTML = '<div class="board-empty">Flight not found. Check the flight number and try again.</div>';
-      return;
-    }
+    if (!flights.length) { document.getElementById('board-content').innerHTML = '<div class="board-empty">Flight not found.</div>'; return; }
+
     document.getElementById('board-title').textContent = `FLIGHT ${input}`;
     document.getElementById('board-stats').innerHTML = '';
     document.getElementById('board-live-status').style.display = 'flex';
-    const now = new Date();
-    document.getElementById('board-refresh-text').textContent = `LIVE - ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
+    document.getElementById('board-refresh-text').textContent = `LIVE - ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
 
-    let html = '<table class="board-table"><thead><tr><th>DATE</th><th>FLIGHT</th><th>AIRLINE</th><th>FROM</th><th>TO</th><th>DEP TIME</th><th>ARR TIME</th><th>GATE</th><th>STATUS</th></tr></thead><tbody>';
-    for (const f of flights) {
-      const dep = f.departure || {};
-      const arr = f.arrival || {};
-      const airline = f.airline || {};
-      const flight = f.flight || {};
-      const status = f.flight_status || 'unknown';
-      const delay = dep.delay;
+    renderFlightTrackBoard(flights);
 
-      let depTime = formatBoardTime(dep.scheduled);
-      if (delay && delay > 0) depTime += ` <span class="delay-badge">+${delay}</span>`;
-      const arrTime = formatBoardTime(arr.scheduled);
-      const statusLabel = boardStatusLabel(status, dep, arr);
-
-      html += `<tr class="flip-in">
-        <td class="col-time">${f.flight_date || ''}</td>
-        <td class="col-flight">${flight.iata || '---'}</td>
-        <td class="col-airline">${airline.name || ''}</td>
-        <td><span class="col-dest">${dep.iata || '---'}</span> <span class="col-airline">${dep.airport || ''}</span></td>
-        <td><span class="col-dest">${arr.iata || '---'}</span> <span class="col-airline">${arr.airport || ''}</span></td>
-        <td>${depTime}</td>
-        <td>${arrTime}</td>
-        <td class="col-gate">${dep.gate || dep.terminal ? 'T' + dep.terminal : '-'}</td>
-        <td><span class="board-status-badge ${boardStatusClass(status)}">${statusLabel}</span></td>
-      </tr>`;
-    }
-    html += '</tbody></table>';
-    container.innerHTML = html;
-
-    // Auto-refresh flight tracking too
     boardRefreshTimer = setInterval(async () => {
       try {
         const r = await fetch(`/api/track?flight_iata=${encodeURIComponent(input)}`);
         const d = await r.json();
-        if (!d.error && d.data?.length) {
-          // Re-render silently
-          boardTrackFlightRender(d, input);
-        }
+        if (!d.error && d.data?.length) renderFlightTrackBoard(d.data);
       } catch {}
     }, BOARD_REFRESH_INTERVAL);
-  } catch (err) {
-    showBoardError('Failed to track flight: ' + err.message);
-  }
+  } catch (err) { showBoardError('Failed: ' + err.message); }
 }
-function boardTrackFlightRender(data, input) {
-  // Lightweight re-render for auto-refresh of tracked flight
-  const flights = data.data || [];
-  if (!flights.length) return;
-  const now = new Date();
-  document.getElementById('board-refresh-text').textContent = `LIVE - ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
-  let html = '<table class="board-table"><thead><tr><th>DATE</th><th>FLIGHT</th><th>AIRLINE</th><th>FROM</th><th>TO</th><th>DEP TIME</th><th>ARR TIME</th><th>GATE</th><th>STATUS</th></tr></thead><tbody>';
+
+function renderFlightTrackBoard(flights) {
+  let html = `<div class="solari-board">
+    <div class="solari-header" style="grid-template-columns: 90px 90px 1fr 1fr 90px 90px 60px 140px;">
+      <span>DATE</span><span>FLIGHT</span><span>FROM</span><span>TO</span><span>DEPART</span><span>ARRIVE</span><span>GATE</span><span>REMARKS</span>
+    </div>`;
   for (const f of flights) {
-    const dep = f.departure || {};
-    const arr = f.arrival || {};
-    const airline = f.airline || {};
-    const flight = f.flight || {};
+    const dep = f.departure || {}, arr = f.arrival || {}, airline = f.airline || {}, flight = f.flight || {};
     const status = f.flight_status || 'unknown';
     const delay = dep.delay;
-    let depTime = formatBoardTime(dep.scheduled);
-    if (delay && delay > 0) depTime += ` <span class="delay-badge">+${delay}</span>`;
-    html += `<tr class="flip-in"><td class="col-time">${f.flight_date || ''}</td><td class="col-flight">${flight.iata || '---'}</td><td class="col-airline">${airline.name || ''}</td><td><span class="col-dest">${dep.iata || '---'}</span></td><td><span class="col-dest">${arr.iata || '---'}</span></td><td>${depTime}</td><td>${formatBoardTime(arr.scheduled)}</td><td class="col-gate">${dep.gate || '-'}</td><td><span class="board-status-badge ${boardStatusClass(status)}">${boardStatusLabel(status, dep, arr)}</span></td></tr>`;
+    const depName = (dep.airport || '').replace(/International|Airport|Intl/gi,'').trim();
+    const arrName = (arr.airport || '').replace(/International|Airport|Intl/gi,'').trim();
+    html += `<div class="solari-row" style="grid-template-columns: 90px 90px 1fr 1fr 90px 90px 60px 140px;">
+      ${flapChars(f.flight_date || '', 10, 'flap-white')}
+      ${flapChars(flight.iata || '---', 7, 'flap-cyan')}
+      ${flapChars((dep.iata||'---') + ' ' + depName, 18, 'flap-white')}
+      ${flapChars((arr.iata||'---') + ' ' + arrName, 18, 'flap-white')}
+      ${flapChars(formatBoardTime(dep.scheduled), 5, 'flap-white')}${delay > 0 ? `<span class="delay-pip">+${delay}</span>` : ''}
+      ${flapChars(formatBoardTime(arr.scheduled), 5, 'flap-white')}
+      ${flapChars(dep.gate || dep.terminal || '-', 4, 'flap-yellow')}
+      ${flapStatus(boardStatusLabel(status, dep, arr), status)}
+    </div>`;
   }
-  html += '</tbody></table>';
+  html += '</div>';
   document.getElementById('board-content').innerHTML = html;
+  document.getElementById('board-refresh-text').textContent = `LIVE - ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
 }
 
 // Enter key for flight search on board
