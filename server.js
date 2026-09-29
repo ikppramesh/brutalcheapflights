@@ -144,11 +144,12 @@ async function searchWithGoogleFlights(from, to, date, returnDate, adults, cabin
   const json = await resp.json();
   if (!json.status && json.message) throw new Error(`GoogleFlights: ${json.message}`);
 
-  // Response has best_flights and other_flights arrays
+  // Response: data.itineraries.topFlights / otherFlights
   const data = json.data || json;
-  const bestFlights = data.best_flights || [];
-  const otherFlights = data.other_flights || [];
-  const allFlights = [...bestFlights, ...otherFlights];
+  const itineraries = data.itineraries || {};
+  const topFlights = itineraries.topFlights || data.best_flights || [];
+  const otherFlights = itineraries.otherFlights || data.other_flights || [];
+  const allFlights = [...topFlights, ...otherFlights];
 
   if (allFlights.length === 0) return [];
 
@@ -157,29 +158,38 @@ async function searchWithGoogleFlights(from, to, date, returnDate, adults, cabin
     const segments = (entry.flights || []).map(seg => {
       const dep = seg.departure_airport || {};
       const arr = seg.arrival_airport || {};
-      const cc = (seg.flight_number || '').substring(0, 2);
+      // flight_number format: "AI 2951" — extract carrier code
+      const fnParts = (seg.flight_number || '').split(' ');
+      const cc = fnParts[0] || '';
+      // time format: "2026-10-15 13:30" → ISO
+      const depTime = (dep.time || '').replace(' ', 'T');
+      const arrTime = (arr.time || '').replace(' ', 'T');
+      // duration is { raw: minutes, text: "2 hr 20 min" }
+      const durMins = typeof seg.duration === 'object' ? (seg.duration.raw || 0) : (seg.duration || 0);
       return {
-        departure: { iataCode: dep.id || from, at: dep.time || '' },
-        arrival: { iataCode: arr.id || to, at: arr.time || '' },
+        departure: { iataCode: dep.airport_code || dep.id || from, at: depTime },
+        arrival: { iataCode: arr.airport_code || arr.id || to, at: arrTime },
         carrierCode: cc,
         carrierName: seg.airline || AIRLINE_NAMES[cc] || cc,
         flightNumber: seg.flight_number || '',
-        duration: parseDurationMinutes(seg.duration || 0),
+        duration: parseDurationMinutes(durMins),
         stops: 0,
-        airplane: seg.airplane || '',
+        airplane: seg.aircraft || seg.airplane || '',
         airlineLogo: seg.airline_logo || ''
       };
     });
 
-    const layovers = (entry.layovers || []).map(l => ({
-      duration: l.duration || 0,
-      airport: l.name || '',
-      id: l.id || ''
-    }));
+    const layovers = entry.layovers ? (Array.isArray(entry.layovers) ? entry.layovers : []).map(l => ({
+      duration: typeof l.duration === 'object' ? (l.duration.raw || 0) : (l.duration || 0),
+      airport: l.name || l.airport_name || '',
+      id: l.airport_code || l.id || ''
+    })) : [];
 
     const price = entry.price || 0;
+    const totalDur = typeof entry.duration === 'object' ? (entry.duration.raw || 0) : (entry.total_duration || 0);
     const firstSeg = segments[0] || {};
-    const isBest = bestFlights.includes(entry);
+    const isBest = topFlights.includes(entry);
+    const stops = entry.stops ?? layovers.length;
 
     results.push({
       id: String(results.length + 1),
@@ -194,12 +204,12 @@ async function searchWithGoogleFlights(from, to, date, returnDate, adults, cabin
       airline: {
         code: firstSeg.carrierCode || '',
         name: firstSeg.carrierName || 'Unknown',
-        logoUrl: firstSeg.airlineLogo || ''
+        logoUrl: entry.airline_logo || firstSeg.airlineLogo || ''
       },
       itineraries: [{
-        duration: parseDurationMinutes(entry.total_duration || 0),
+        duration: parseDurationMinutes(totalDur),
         segments,
-        stops: layovers.length,
+        stops,
         layovers
       }],
       bookableSeats: null,
