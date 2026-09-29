@@ -565,19 +565,23 @@ app.get('/api/visa', (req, res) => {
 });
 
 // ============================================================
-// Start server
+// Start server (local only — Vercel uses the exported app)
 // ============================================================
-app.listen(PORT, () => {
-  console.log('');
-  console.log('==============================================');
-  console.log('  BrutalCheapFlights Server Running');
-  console.log(`  Open: http://localhost:${PORT}`);
-  console.log('==============================================');
-  console.log('');
-  if (!googleFlightsConfigured) {
-    console.log('For Google Flights data (150 free req/month), add RapidAPI key:');
-    console.log('  1. Subscribe free: https://rapidapi.com/DataCrawler/api/google-flights2');
-    console.log('  2. Add to .env: RAPIDAPI_KEY=your_key_here');
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
     console.log('');
-  }
-});
+    console.log('==============================================');
+    console.log('  BrutalCheapFlights Server Running');
+    console.log(`  Open: http://localhost:${PORT}`);
+    console.log('==============================================');
+    console.log('');
+    if (!googleFlightsConfigured) {
+      console.log('For Google Flights data (150 free req/month), add RapidAPI key:');
+      console.log('  1. Subscribe free: https://rapidapi.com/DataCrawler/api/google-flights2');
+      console.log('  2. Add to .env: RAPIDAPI_KEY=your_key_here');
+      console.log('');
+    }
+  });
+}
+
+module.exports = app;
