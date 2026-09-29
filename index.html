@@ -1,0 +1,2832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrutalCheapFlights - Cheapest Air Tickets</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f0f2f5;
+  --card: #ffffff;
+  --text: #1a1a2e;
+  --text-secondary: #555;
+  --primary: #0052cc;
+  --primary-dark: #003d99;
+  --accent: #ff5722;
+  --accent-hover: #e64a19;
+  --success: #00c853;
+  --border: #e0e0e0;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-hover: 0 6px 24px rgba(0,0,0,0.15);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d2137 100%);
+  color: white;
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo {
+  display: flex;
+  align-items: center;
+}
+.logo img {
+  height: 48px;
+  width: auto;
+  mix-blend-mode: screen;
+}
+.privacy-badge {
+  background: rgba(0, 200, 83, 0.15);
+  border: 1px solid rgba(0, 200, 83, 0.4);
+  color: #69f0ae;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Search Section */
+.search-section {
+  background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d2137 100%);
+  padding: 10px 0 50px;
+  margin-bottom: 30px;
+}
+.search-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.search-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.search-row-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-group {
+  position: relative;
+}
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  color: var(--text);
+  background: #fafafa;
+  transition: all 0.2s;
+  outline: none;
+}
+.form-group input:focus, .form-group select:focus {
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+}
+.form-group input::placeholder { color: #aaa; }
+
+/* Trip type toggle */
+.trip-type-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  background: #f0f2f5;
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  width: fit-content;
+}
+.trip-type-btn {
+  padding: 8px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.trip-type-btn.active {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* Autocomplete */
+.autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-hover);
+  z-index: 50;
+  max-height: 250px;
+  overflow-y: auto;
+  display: none;
+}
+.autocomplete-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.1s;
+}
+.autocomplete-item:hover, .autocomplete-item.highlighted {
+  background: #e8f0fe;
+}
+.ac-code {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+.ac-city {
+  color: var(--text);
+  font-size: 0.85rem;
+}
+.ac-country {
+  color: #999;
+  font-size: 0.75rem;
+}
+.swap-btn {
+  position: absolute;
+  right: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--primary);
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.swap-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Search button */
+.search-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.btn-search {
+  flex: 1;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #ff5722, #e64a19);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.btn-search:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4);
+}
+.btn-open-all {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #0052cc, #003d99);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-open-all:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 82, 204, 0.4);
+}
+
+/* Results */
+.results-section {
+  margin-bottom: 40px;
+  display: none;
+}
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.section-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.platform-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: all 0.25s;
+  border-left: 4px solid;
+  position: relative;
+  overflow: hidden;
+}
+.platform-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+.platform-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.platform-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.platform-tag {
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tag-aggregator { background: #e8f5e9; color: #2e7d32; }
+.tag-ota { background: #e3f2fd; color: #1565c0; }
+.tag-airline { background: #fce4ec; color: #c62828; }
+.tag-meta { background: #fff3e0; color: #e65100; }
+.platform-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.platform-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.feature-chip {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  color: #666;
+}
+.btn-platform {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: block;
+  text-align: center;
+}
+.btn-platform:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Offers section */
+.offers-section {
+  margin-bottom: 40px;
+}
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+}
+.offer-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--accent);
+}
+.offer-card h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.offer-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.offer-link {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.offer-link:hover { text-decoration: underline; }
+
+/* Miles Calculator */
+.miles-section {
+  margin-bottom: 40px;
+}
+.miles-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+.miles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.miles-input-group {
+  background: #f8f9fa;
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+.miles-input-group h4 {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.miles-input-group .subtitle {
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 10px;
+}
+.miles-input-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+}
+.miles-input-group input:focus {
+  border-color: var(--primary);
+}
+.miles-input-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  margin-bottom: 10px;
+  background: white;
+}
+.miles-result {
+  background: linear-gradient(135deg, #0a1628, #1a3a5c);
+  color: white;
+  border-radius: var(--radius);
+  padding: 24px;
+  display: none;
+}
+.miles-result h3 { margin-bottom: 16px; font-size: 1.1rem; }
+.miles-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.miles-item {
+  background: rgba(255,255,255,0.1);
+  padding: 14px;
+  border-radius: 8px;
+}
+.miles-item .label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+.miles-item .value {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.miles-total {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.miles-total .total-label { font-size: 1rem; }
+.miles-total .total-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #69f0ae;
+}
+.btn-calc {
+  padding: 12px 28px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-calc:hover {
+  background: var(--primary-dark);
+}
+
+/* Pro Tips */
+.tips-section {
+  margin-bottom: 40px;
+}
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.tip-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.tip-icon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+.tip-card h3 {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+.tip-card p {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Deal Sites */
+.deal-sites-section {
+  margin-bottom: 40px;
+}
+.deal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+.deal-link-card {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+}
+.deal-link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+.deal-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: white;
+  flex-shrink: 0;
+}
+.deal-link-card .deal-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.deal-link-card .deal-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: #999;
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-in {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-row, .search-row-3, .search-row-4 {
+    grid-template-columns: 1fr;
+  }
+  .swap-btn { display: none; }
+  .search-actions { flex-direction: column; }
+  .results-grid { grid-template-columns: 1fr; }
+  .offers-grid { grid-template-columns: 1fr; }
+  .miles-grid { grid-template-columns: 1fr; }
+  .tips-grid { grid-template-columns: 1fr; }
+  .deal-grid { grid-template-columns: 1fr; }
+  .header-inner { flex-direction: column; gap: 10px; text-align: center; }
+  .logo img { height: 36px; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #999; }
+
+.warning-banner {
+  background: #fff3e0;
+  border: 1px solid #ffcc02;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: #e65100;
+  display: none;
+}
+
+.flex-date-hint {
+  font-size: 0.75rem;
+  color: var(--primary);
+  margin-top: 4px;
+  cursor: pointer;
+}
+.flex-date-hint:hover { text-decoration: underline; }
+
+/* Scam Warning Banner */
+.scam-warning {
+  background: linear-gradient(135deg, #b71c1c, #d32f2f);
+  color: white;
+  padding: 16px 20px;
+  margin-bottom: 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.scam-warning h3 { font-size: 1rem; margin-bottom: 6px; }
+.scam-warning p { font-size: 0.83rem; opacity: 0.95; line-height: 1.5; }
+.scam-warning ul {
+  margin-top: 8px;
+  padding-left: 20px;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  opacity: 0.95;
+}
+
+/* Fee Badge */
+.fee-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+.fee-zero { background: #c8e6c9; color: #1b5e20; }
+.fee-low { background: #fff9c4; color: #f57f17; }
+.fee-high { background: #ffcdd2; color: #b71c1c; }
+.fee-none { background: #e8f5e9; color: #2e7d32; }
+
+/* Direct Airlines Section */
+.airlines-section { margin-bottom: 40px; }
+.airlines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.airline-card {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: all 0.2s;
+  border-top: 3px solid;
+  display: none;
+}
+.airline-card.visible { display: block; }
+.airline-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+.airline-card .airline-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+.airline-card .airline-note {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.airline-card .btn-airline {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.airline-card .btn-airline:hover { filter: brightness(1.15); }
+
+/* Live Price Results */
+.price-section { margin-bottom: 40px; display: none; }
+.price-status {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+.price-status .spinner {
+  width: 36px; height: 36px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.price-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.summary-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.summary-card .label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.summary-card .value { font-size: 1.6rem; font-weight: 800; color: var(--text); }
+.summary-card .sub { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
+.summary-card.best { border: 2px solid #00c853; background: #f0fff4; }
+.summary-card.best .value { color: #00c853; }
+
+.flight-list { display: flex; flex-direction: column; gap: 12px; }
+.flight-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 1fr 2.5fr 1fr auto;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+  position: relative;
+}
+.flight-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.flight-card.cheapest-card { border: 2px solid #00c853; }
+.flight-card.fastest-card { border: 2px solid #2196f3; }
+
+.flight-airline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.flight-airline .name { font-weight: 700; font-size: 0.95rem; }
+.flight-airline .code { font-size: 0.75rem; color: var(--text-secondary); }
+
+.flight-route {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.flight-time {
+  text-align: center;
+}
+.flight-time .time { font-size: 1.1rem; font-weight: 700; }
+.flight-time .airport { font-size: 0.7rem; color: var(--text-secondary); }
+.flight-path {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.flight-path .duration { font-size: 0.7rem; color: var(--text-secondary); }
+.flight-path .line {
+  height: 2px;
+  background: var(--border);
+  margin: 4px 0;
+  position: relative;
+}
+.flight-path .line::after {
+  content: '';
+  position: absolute;
+  right: -2px; top: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+.flight-path .stops-label { font-size: 0.7rem; color: var(--accent); font-weight: 600; }
+.flight-path .stops-label.direct { color: #00c853; }
+
+.flight-price {
+  text-align: right;
+}
+.flight-price .amount { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+.flight-price .per-person { font-size: 0.7rem; color: var(--text-secondary); }
+
+.flight-badge {
+  position: absolute;
+  top: -1px; right: 16px;
+  padding: 3px 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 0 0 6px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-cheapest { background: #00c853; color: white; }
+.badge-fastest { background: #2196f3; color: white; }
+.badge-best-direct { background: #ff9800; color: white; }
+
+/* OTA comparison table */
+.ota-compare {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-top: 24px;
+  overflow-x: auto;
+}
+.ota-compare h3 { font-size: 1rem; margin-bottom: 14px; }
+.ota-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.ota-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: #f5f5f5;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+}
+.ota-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.ota-table tr:hover td { background: #fafafa; }
+.ota-table .ota-recommended { background: #f0fff4; font-weight: 600; }
+.ota-table .ota-warning { color: #b71c1c; }
+.ota-table .ota-good { color: #2e7d32; font-weight: 700; }
+.ota-best-badge {
+  display: inline-block;
+  background: #00c853;
+  color: white;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 700;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.server-mode-badge {
+  background: rgba(0, 200, 83, 0.15);
+  border: 1px solid rgba(0, 200, 83, 0.4);
+  color: #00c853;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.no-server-note {
+  background: #fff3e0;
+  border: 1px solid #ffcc02;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 0.83rem;
+  color: #e65100;
+  line-height: 1.6;
+}
+.no-server-note code {
+  background: #fbe9e7;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+/* Visa Info Section */
+.visa-section { margin-bottom: 40px; display: none; }
+.visa-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  border-left: 5px solid;
+}
+.visa-card.visa-free { border-left-color: #00c853; }
+.visa-card.visa-on-arrival { border-left-color: #ff9800; }
+.visa-card.e-visa { border-left-color: #2196f3; }
+.visa-card.visa-required { border-left-color: #f44336; }
+.visa-card.domestic { border-left-color: #00c853; }
+.visa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.visa-country { font-size: 1.2rem; font-weight: 800; }
+.visa-type-badge {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.vtb-free { background: #e8f5e9; color: #1b5e20; }
+.vtb-voa { background: #fff3e0; color: #e65100; }
+.vtb-evisa { background: #e3f2fd; color: #1565c0; }
+.vtb-required { background: #ffebee; color: #b71c1c; }
+.vtb-domestic { background: #e8f5e9; color: #1b5e20; }
+.visa-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.visa-detail-item {
+  background: #f8f9fa;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+.visa-detail-item .vd-label { font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 2px; }
+.visa-detail-item .vd-value { font-size: 0.9rem; font-weight: 600; }
+.visa-notes {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+.us-visa-box {
+  background: linear-gradient(135deg, #e8eaf6, #e3f2fd);
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 14px;
+  margin-top: 12px;
+}
+.us-visa-box h4 { font-size: 0.85rem; color: #1565c0; margin-bottom: 6px; }
+.us-visa-box p { font-size: 0.8rem; color: #333; line-height: 1.5; }
+.visa-disclaimer {
+  font-size: 0.7rem;
+  color: #999;
+  margin-top: 10px;
+  font-style: italic;
+}
+.visa-apply-btn {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
+  transition: all 0.2s;
+}
+.visa-apply-btn:hover {
+  background: linear-gradient(135deg, #0d47a1, #0a3d91);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13,71,161,0.3);
+}
+.visa-apply-btn::before {
+  content: '\27A1';
+  margin-right: 8px;
+}
+.visa-config {
+  background: #f8f9fa;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.visa-config label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+.visa-toggle {
+  position: relative;
+  width: 44px; height: 24px;
+  background: #ccc;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.visa-toggle.active { background: #00c853; }
+.visa-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 20px; height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+.visa-toggle.active::after { left: 22px; }
+@media (max-width: 768px) {
+  .flight-card { grid-template-columns: 1fr; text-align: center; }
+  .flight-price { text-align: center; }
+  .price-summary { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo"><img src="image.png" alt="BrutalCheapFlights"></div>
+    <div class="privacy-badge">ZERO DATA STORED - PRIVATE</div>
+  </div>
+</header>
+
+<!-- Search Section -->
+<section class="search-section">
+  <div class="container">
+    <div class="search-card">
+      <!-- Trip Type -->
+      <div class="trip-type-toggle">
+        <button class="trip-type-btn active" data-type="oneway" onclick="setTripType('oneway')">One Way</button>
+        <button class="trip-type-btn" data-type="roundtrip" onclick="setTripType('roundtrip')">Round Trip</button>
+      </div>
+
+      <!-- From / To -->
+      <div class="search-row" style="position: relative;">
+        <div class="form-group" id="from-group">
+          <label>From</label>
+          <input type="text" id="from-input" placeholder="City or Airport Code" autocomplete="off" spellcheck="false">
+          <input type="hidden" id="from-code">
+          <div class="autocomplete-list" id="from-ac"></div>
+          <button class="swap-btn" onclick="swapAirports()" title="Swap">&#8646;</button>
+        </div>
+        <div class="form-group" id="to-group">
+          <label>To</label>
+          <input type="text" id="to-input" placeholder="City or Airport Code" autocomplete="off" spellcheck="false">
+          <input type="hidden" id="to-code">
+          <div class="autocomplete-list" id="to-ac"></div>
+        </div>
+      </div>
+
+      <!-- Dates & Passengers -->
+      <div class="search-row-4">
+        <div class="form-group">
+          <label>Departure</label>
+          <input type="date" id="dep-date">
+        </div>
+        <div class="form-group" id="ret-group" style="display:none;">
+          <label>Return</label>
+          <input type="date" id="ret-date">
+        </div>
+        <div class="form-group">
+          <label>Passengers</label>
+          <select id="passengers">
+            <option value="1">1 Adult</option>
+            <option value="2">2 Adults</option>
+            <option value="3">3 Adults</option>
+            <option value="4">4 Adults</option>
+            <option value="5">5 Adults</option>
+            <option value="6">6 Adults</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Class</label>
+          <select id="cabin-class">
+            <option value="economy">Economy</option>
+            <option value="premium_economy">Premium Economy</option>
+            <option value="business">Business</option>
+            <option value="first">First Class</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="search-warning" class="warning-banner"></div>
+
+      <!-- Search Buttons -->
+      <div class="search-actions">
+        <button class="btn-search" onclick="searchFlights()">Find Cheapest Flights</button>
+        <button class="btn-open-all" onclick="openAllPlatforms()">Open All 14 Sites</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scam Warning -->
+<div class="container">
+  <div class="scam-warning">
+    <h3>BEWARE: OTA Hidden Charges & Commission Scams</h3>
+    <p>Many online travel agencies (OTAs) and metasearch platforms add hidden fees that inflate the ticket price:</p>
+    <ul>
+      <li><b>Convenience Fee:</b> Rs.200-600 per passenger added at checkout (MakeMyTrip, Goibibo, Cleartrip, Yatra add this)</li>
+      <li><b>Insurance/Add-ons:</b> Pre-selected travel insurance, seat selection, meals auto-added to cart - UNCHECK these</li>
+      <li><b>Payment Gateway Fee:</b> Extra 1-2% charged on credit/debit card payments by some OTAs</li>
+      <li><b>Dynamic Pricing Markup:</b> OTAs may show a low base fare but add markup in taxes/fees breakdown</li>
+      <li><b>Commission Baked In:</b> OTAs get 1-5% commission from airlines, sometimes they add more on top</li>
+    </ul>
+    <p style="margin-top:10px;"><b>SOLUTION:</b> Always compare the FINAL price (after all fees) across platforms. Book directly on airline websites when possible - they have ZERO convenience fee and no middleman markup. Use EaseMyTrip if booking via OTA (zero convenience fee).</p>
+  </div>
+</div>
+
+<!-- Server Status Note -->
+<div class="container" id="no-server-note" style="display:none;">
+  <div class="no-server-note">
+    <b>Live Prices Available!</b> To see real-time flight prices with comparison, run the local server:<br>
+    <code>cd Travel && npm install && npm start</code> then open <code>http://localhost:3000</code><br>
+    Get free API key from <a href="https://rapidapi.com/apiheya/api/sky-scrapper" target="_blank">RapidAPI Sky-Scrapper</a> (100 free searches/month - real Skyscanner prices).
+    <br>Without the server, you can still use all search links below.
+  </div>
+</div>
+
+<!-- Live Price Results -->
+<section class="price-section container" id="price-section">
+  <h2 class="section-title">Live Flight Prices <span class="server-mode-badge" id="price-mode-badge">LIVE</span></h2>
+  <p class="section-subtitle" id="price-subtitle">Real-time prices sorted cheapest first. Zero markup shown.</p>
+  <div id="price-status" class="price-status" style="display:none;">
+    <div class="spinner"></div>
+    <div>Searching flights... Fetching real prices...</div>
+  </div>
+  <div id="price-summary" class="price-summary" style="display:none;"></div>
+  <div id="flight-list" class="flight-list"></div>
+  <div id="ota-compare" class="ota-compare" style="display:none;"></div>
+</section>
+
+<!-- Visa Information -->
+<section class="visa-section container" id="visa-section">
+  <h2 class="section-title">Visa Requirements (Indian Passport - Sep 2026)</h2>
+  <div class="visa-config">
+    <label>I have a valid US Visa:</label>
+    <div class="visa-toggle" id="us-visa-toggle" onclick="toggleUSVisa()"></div>
+    <span id="us-visa-label" style="font-size:0.8rem; color:#888;">No</span>
+  </div>
+  <div id="visa-content"></div>
+</section>
+
+<!-- Direct Airline Booking (Zero Commission) -->
+<section class="airlines-section container" id="airlines-section" style="display:none;">
+  <h2 class="section-title">Book Direct from Airlines (ZERO Commission)</h2>
+  <p class="section-subtitle">No middleman, no convenience fee, no hidden markup. The cheapest final price is often direct from the airline.</p>
+  <div class="airlines-grid" id="airlines-grid"></div>
+</section>
+
+<!-- Results Section -->
+<section class="results-section container" id="results-section">
+  <h2 class="section-title">Search Across All Platforms</h2>
+  <p class="section-subtitle" id="results-subtitle">Click any card to search that platform, or use "Open All" to compare everywhere at once.</p>
+  <div class="results-grid" id="results-grid"></div>
+</section>
+
+<!-- Offers Section -->
+<section class="offers-section container" id="offers-section">
+  <h2 class="section-title">Current Offers & Bank Deals</h2>
+  <p class="section-subtitle">Check these for additional discounts on top of the cheapest fare.</p>
+  <div class="offers-grid" id="offers-grid">
+    <div class="offer-card">
+      <h3>MakeMyTrip Bank Offers</h3>
+      <p>ICICI, HDFC, SBI, Axis bank card discounts up to Rs.2500 on domestic & Rs.5000 on international flights.</p>
+      <a class="offer-link" href="https://www.makemytrip.com/offers/flights" target="_blank" rel="noopener">View All MMT Offers &rarr;</a>
+    </div>
+    <div class="offer-card">
+      <h3>Goibibo SuperCash & Deals</h3>
+      <p>Goibibo frequently offers GoCash+ wallet cashback and bank-specific flight discounts.</p>
+      <a class="offer-link" href="https://www.goibibo.com/offers/flight-offers/" target="_blank" rel="noopener">View Goibibo Offers &rarr;</a>
+    </div>
+    <div class="offer-card">
+      <h3>Cleartrip Offers</h3>
+      <p>Bank card offers, Cleartrip wallet cashback, and seasonal sale events.</p>
+      <a class="offer-link" href="https://www.cleartrip.com/offers/domestic" target="_blank" rel="noopener">View Cleartrip Offers &rarr;</a>
+    </div>
+    <div class="offer-card">
+      <h3>EaseMyTrip Deals</h3>
+      <p>Known for zero-convenience-fee bookings. Check for bank card combos and coupon codes.</p>
+      <a class="offer-link" href="https://www.easemytrip.com/offers/flight-offers.html" target="_blank" rel="noopener">View EaseMyTrip Offers &rarr;</a>
+    </div>
+    <div class="offer-card">
+      <h3>Paytm Flights Cashback</h3>
+      <p>Paytm wallet cashback, UPI payment discounts, and first-booking offers.</p>
+      <a class="offer-link" href="https://paytm.com/offer/flights" target="_blank" rel="noopener">View Paytm Offers &rarr;</a>
+    </div>
+    <div class="offer-card">
+      <h3>Yatra SBI Card Offer</h3>
+      <p>SBI card holders can get up to Rs.5000 off on international flights and Rs.1500 on domestic.</p>
+      <a class="offer-link" href="https://www.yatra.com/flights-offers" target="_blank" rel="noopener">View Yatra Offers &rarr;</a>
+    </div>
+    <div class="offer-card">
+      <h3>Ixigo Assured & Coupons</h3>
+      <p>ixigo assured free cancellation deals, bank-specific coupons and wallet cashback.</p>
+      <a class="offer-link" href="https://www.ixigo.com/deals/offers" target="_blank" rel="noopener">View Ixigo Offers &rarr;</a>
+    </div>
+    <div class="offer-card">
+      <h3>Credit Card Travel Portals</h3>
+      <p>Book through HDFC SmartBuy, ICICI iMobile, Axis EDGE Rewards, Amex Travel to maximize point redemption value.</p>
+      <a class="offer-link" href="https://smartbuy.hdfcbank.com/flights" target="_blank" rel="noopener">HDFC SmartBuy &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- Miles & Points Calculator -->
+<section class="miles-section container" id="miles-section">
+  <h2 class="section-title">Miles & Points Value Calculator</h2>
+  <p class="section-subtitle">See how much your airline miles and credit card points are worth in INR. Decide if paying cash or using points is a better deal.</p>
+  <div class="miles-card">
+    <div class="miles-grid">
+      <div class="miles-input-group">
+        <h4>Singapore Airlines KrisFlyer</h4>
+        <div class="subtitle">Avg redemption value: ~Rs.0.90 - Rs.1.50 per mile</div>
+        <input type="number" id="krisflyer-miles" placeholder="Enter KrisFlyer miles" min="0">
+      </div>
+      <div class="miles-input-group">
+        <h4>Emirates Skywards</h4>
+        <div class="subtitle">Avg redemption value: ~Rs.0.70 - Rs.1.20 per mile</div>
+        <input type="number" id="skywards-miles" placeholder="Enter Skywards miles" min="0">
+      </div>
+      <div class="miles-input-group">
+        <h4>Credit Card 1 - Reward Points</h4>
+        <div class="subtitle">Select your card for accurate valuation</div>
+        <select id="cc-type">
+          <option value="">-- Select Card --</option>
+          <optgroup label="HDFC">
+            <option value="hdfc_infinia" data-val="1.00">HDFC Infinia (~Rs.1.00/pt)</option>
+            <option value="hdfc_diners_black" data-val="1.00">HDFC Diners Black (~Rs.1.00/pt)</option>
+            <option value="hdfc_regalia" data-val="0.50">HDFC Regalia (~Rs.0.50/pt)</option>
+            <option value="hdfc_millennia" data-val="0.30">HDFC Millennia (~Rs.0.30/pt)</option>
+          </optgroup>
+          <optgroup label="ICICI">
+            <option value="icici_emeralde" data-val="0.50">ICICI Emeralde (~Rs.0.50/pt)</option>
+            <option value="icici_sapphiro" data-val="0.50">ICICI Sapphiro (~Rs.0.50/pt)</option>
+            <option value="icici_amazon" data-val="0.25">ICICI Amazon Pay (~Rs.0.25/pt)</option>
+          </optgroup>
+          <optgroup label="Axis">
+            <option value="axis_magnus" data-val="0.50">Axis Magnus (~Rs.0.50/pt via transfer)</option>
+            <option value="axis_reserve" data-val="0.50">Axis Reserve (~Rs.0.50/pt)</option>
+            <option value="axis_vistara" data-val="0.80">Axis Vistara Infinite (~Rs.0.80/pt)</option>
+          </optgroup>
+          <optgroup label="Amex">
+            <option value="amex_plat" data-val="0.50">Amex Platinum Travel (~Rs.0.50/pt)</option>
+            <option value="amex_mrcc" data-val="0.30">Amex MRCC (~Rs.0.30/pt)</option>
+          </optgroup>
+          <optgroup label="SBI">
+            <option value="sbi_elite" data-val="0.25">SBI Elite (~Rs.0.25/pt)</option>
+            <option value="sbi_prime" data-val="0.25">SBI Prime (~Rs.0.25/pt)</option>
+          </optgroup>
+          <optgroup label="IDFC First">
+            <option value="idfc_mayura" data-val="0.25">IDFC First Mayura (~Rs.0.25/pt)</option>
+            <option value="idfc_select" data-val="0.25">IDFC First Select (~Rs.0.25/pt)</option>
+            <option value="idfc_millennia" data-val="0.25">IDFC First Millennia (~Rs.0.25/pt)</option>
+            <option value="idfc_classic" data-val="0.20">IDFC First Classic (~Rs.0.20/pt)</option>
+            <option value="idfc_wealth" data-val="0.25">IDFC First WOW (~Rs.0.25/pt)</option>
+          </optgroup>
+          <optgroup label="Scapia">
+            <option value="scapia" data-val="1.00">Scapia Card (~Rs.1.00/pt - direct flight booking)</option>
+          </optgroup>
+          <optgroup label="Others">
+            <option value="yes_first" data-val="0.25">Yes First Exclusive (~Rs.0.25/pt)</option>
+            <option value="sc_ultimate" data-val="0.50">Standard Chartered Ultimate (~Rs.0.50/pt)</option>
+            <option value="au_zenith" data-val="0.25">AU Zenith (~Rs.0.25/pt)</option>
+            <option value="kotak_privy" data-val="0.25">Kotak Privy League (~Rs.0.25/pt)</option>
+            <option value="bob_eterna" data-val="0.25">BOB Eterna (~Rs.0.25/pt)</option>
+          </optgroup>
+        </select>
+        <input type="number" id="cc-points" placeholder="Enter reward points" min="0">
+      </div>
+      <div class="miles-input-group">
+        <h4>Credit Card 2 - Reward Points (Optional)</h4>
+        <div class="subtitle">Add a second card if you have points on multiple cards</div>
+        <select id="cc-type-2">
+          <option value="">-- Select Card --</option>
+          <optgroup label="HDFC">
+            <option value="hdfc_infinia" data-val="1.00">HDFC Infinia (~Rs.1.00/pt)</option>
+            <option value="hdfc_diners_black" data-val="1.00">HDFC Diners Black (~Rs.1.00/pt)</option>
+            <option value="hdfc_regalia" data-val="0.50">HDFC Regalia (~Rs.0.50/pt)</option>
+            <option value="hdfc_millennia" data-val="0.30">HDFC Millennia (~Rs.0.30/pt)</option>
+          </optgroup>
+          <optgroup label="ICICI">
+            <option value="icici_emeralde" data-val="0.50">ICICI Emeralde (~Rs.0.50/pt)</option>
+            <option value="icici_sapphiro" data-val="0.50">ICICI Sapphiro (~Rs.0.50/pt)</option>
+            <option value="icici_amazon" data-val="0.25">ICICI Amazon Pay (~Rs.0.25/pt)</option>
+          </optgroup>
+          <optgroup label="Axis">
+            <option value="axis_magnus" data-val="0.50">Axis Magnus (~Rs.0.50/pt via transfer)</option>
+            <option value="axis_reserve" data-val="0.50">Axis Reserve (~Rs.0.50/pt)</option>
+            <option value="axis_vistara" data-val="0.80">Axis Vistara Infinite (~Rs.0.80/pt)</option>
+          </optgroup>
+          <optgroup label="Amex">
+            <option value="amex_plat" data-val="0.50">Amex Platinum Travel (~Rs.0.50/pt)</option>
+            <option value="amex_mrcc" data-val="0.30">Amex MRCC (~Rs.0.30/pt)</option>
+          </optgroup>
+          <optgroup label="IDFC First">
+            <option value="idfc_mayura" data-val="0.25">IDFC First Mayura (~Rs.0.25/pt)</option>
+            <option value="idfc_select" data-val="0.25">IDFC First Select (~Rs.0.25/pt)</option>
+            <option value="idfc_millennia" data-val="0.25">IDFC First Millennia (~Rs.0.25/pt)</option>
+          </optgroup>
+          <optgroup label="Scapia">
+            <option value="scapia" data-val="1.00">Scapia Card (~Rs.1.00/pt - direct flight booking)</option>
+          </optgroup>
+          <optgroup label="Others">
+            <option value="sbi_elite" data-val="0.25">SBI Elite (~Rs.0.25/pt)</option>
+            <option value="sc_ultimate" data-val="0.50">Standard Chartered Ultimate (~Rs.0.50/pt)</option>
+            <option value="yes_first" data-val="0.25">Yes First Exclusive (~Rs.0.25/pt)</option>
+          </optgroup>
+        </select>
+        <input type="number" id="cc-points-2" placeholder="Enter reward points" min="0">
+      </div>
+    </div>
+    <button class="btn-calc" onclick="calculateMiles()">Calculate Value</button>
+    <div class="miles-result" id="miles-result">
+      <h3>Your Points & Miles Value</h3>
+      <div class="miles-breakdown" id="miles-breakdown"></div>
+      <div class="miles-total">
+        <span class="total-label">Total Estimated Value</span>
+        <span class="total-value" id="miles-total-value">Rs.0</span>
+      </div>
+      <p style="margin-top:12px; font-size:0.8rem; opacity:0.7;">
+        * Values are approximate. Actual redemption value varies by route, class, and availability.
+        Business/First class redemptions typically give 1.5x-3x better value per mile.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Error Fare & Deal Sites -->
+<section class="deal-sites-section container">
+  <h2 class="section-title">Error Fare & Deal Alert Sites</h2>
+  <p class="section-subtitle">Subscribe to these for brutally cheap mistake fares and flash sales.</p>
+  <div class="deal-grid">
+    <a class="deal-link-card" href="https://www.secretflying.com/posts/country/india/" target="_blank" rel="noopener">
+      <div class="deal-icon" style="background:#e53935;">S</div>
+      <div>
+        <div class="deal-name">Secret Flying</div>
+        <div class="deal-desc">Error fares & deals from India</div>
+      </div>
+    </a>
+    <a class="deal-link-card" href="https://www.going.com/" target="_blank" rel="noopener">
+      <div class="deal-icon" style="background:#43a047;">G</div>
+      <div>
+        <div class="deal-name">Going (Scott's Cheap Flights)</div>
+        <div class="deal-desc">Curated cheap flight deals</div>
+      </div>
+    </a>
+    <a class="deal-link-card" href="https://www.theflightdeal.com/" target="_blank" rel="noopener">
+      <div class="deal-icon" style="background:#1565c0;">F</div>
+      <div>
+        <div class="deal-name">The Flight Deal</div>
+        <div class="deal-desc">Handpicked amazing flight deals</div>
+      </div>
+    </a>
+    <a class="deal-link-card" href="https://www.google.com/travel/explore" target="_blank" rel="noopener">
+      <div class="deal-icon" style="background:#4285f4;">G</div>
+      <div>
+        <div class="deal-name">Google Flights Explore</div>
+        <div class="deal-desc">Cheapest flights anywhere from your city</div>
+      </div>
+    </a>
+    <a class="deal-link-card" href="https://www.skyscanner.co.in/transport/flights-from/in/cheapest-flights-from-india.html" target="_blank" rel="noopener">
+      <div class="deal-icon" style="background:#0770e3;">S</div>
+      <div>
+        <div class="deal-name">Skyscanner "Everywhere"</div>
+        <div class="deal-desc">Search cheapest flights to anywhere</div>
+      </div>
+    </a>
+    <a class="deal-link-card" href="https://matrix.itasoftware.com/" target="_blank" rel="noopener">
+      <div class="deal-icon" style="background:#333;">M</div>
+      <div>
+        <div class="deal-name">ITA Matrix (Google)</div>
+        <div class="deal-desc">Power search - most flexible fare finder</div>
+      </div>
+    </a>
+    <a class="deal-link-card" href="https://www.airfarewatchdog.com/" target="_blank" rel="noopener">
+      <div class="deal-icon" style="background:#ff8f00;">A</div>
+      <div>
+        <div class="deal-name">Airfare Watchdog</div>
+        <div class="deal-desc">Fare alerts & deal tracking</div>
+      </div>
+    </a>
+    <a class="deal-link-card" href="https://www.momondo.in/" target="_blank" rel="noopener">
+      <div class="deal-icon" style="background:#6a1b9a;">M</div>
+      <div>
+        <div class="deal-name">Momondo India</div>
+        <div class="deal-desc">Meta-search with price prediction</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- Pro Tips -->
+<section class="tips-section container">
+  <h2 class="section-title">Pro Tips for Brutally Cheap Flights</h2>
+  <p class="section-subtitle">Follow these to consistently find the lowest fares.</p>
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="tip-icon">&#128270;</div>
+      <h3>Use Incognito/Private Mode</h3>
+      <p>Airlines and OTAs track your searches and may raise prices. Always search in incognito/private browsing mode. This app stores nothing, but the booking sites do.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">&#128197;</div>
+      <h3>Be Flexible with Dates</h3>
+      <p>Tuesday, Wednesday, and Saturday departures are usually cheapest. Use Google Flights' date grid or Skyscanner's "Whole Month" view to find the cheapest day.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">&#9200;</div>
+      <h3>Book 3-8 Weeks in Advance</h3>
+      <p>For domestic flights, 3-6 weeks ahead is the sweet spot. For international, 6-12 weeks. Last-minute bookings are almost always more expensive.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">&#127759;</div>
+      <h3>Consider Nearby Airports</h3>
+      <p>Flying into a nearby city can save thousands. Example: BLR vs HYD for South India, or DEL vs JAI. Check both and compare.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">&#128176;</div>
+      <h3>Stack Offers</h3>
+      <p>Combine bank card offers + coupon codes + wallet cashback for maximum savings. Some combos can save Rs.3000-5000 on international flights.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">&#9992;</div>
+      <h3>Check Direct Airline Sites</h3>
+      <p>Sometimes airlines (especially IndiGo, Air India, SpiceJet) have web-exclusive fares not shown on OTAs. Always cross-check the airline's own website.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">&#128680;</div>
+      <h3>Set Fare Alerts</h3>
+      <p>Use Google Flights "Track prices" and Skyscanner "Price Alerts". Get notified when prices drop for your route. Patience often pays off.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">&#127915;</div>
+      <h3>Points > Cash on Premium Cabins</h3>
+      <p>Miles/points give much better value when redeemed for business/first class (2x-5x better per-point value vs economy). If you have enough points, go premium.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p><img src="image.png" alt="BrutalCheapFlights" style="height:32px; vertical-align:middle; margin-right:8px; background:#0a1628; border-radius:6px; padding:4px 10px;">Zero data stored. No cookies. No tracking. No cache. Every search is fresh.</p>
+  <p style="margin-top:6px;">Prices and availability are determined by the respective platforms. This tool generates search links only.</p>
+</footer>
+
+<script>
+// ============================================================
+// AIRPORT DATABASE
+// ============================================================
+const airports = [
+  // India
+  { code: 'DEL', city: 'New Delhi', name: 'Indira Gandhi International', country: 'India' },
+  { code: 'BOM', city: 'Mumbai', name: 'Chhatrapati Shivaji Maharaj', country: 'India' },
+  { code: 'BLR', city: 'Bengaluru', name: 'Kempegowda International', country: 'India' },
+  { code: 'MAA', city: 'Chennai', name: 'Chennai International', country: 'India' },
+  { code: 'HYD', city: 'Hyderabad', name: 'Rajiv Gandhi International', country: 'India' },
+  { code: 'CCU', city: 'Kolkata', name: 'Netaji Subhas Chandra Bose', country: 'India' },
+  { code: 'AMD', city: 'Ahmedabad', name: 'Sardar Vallabhbhai Patel', country: 'India' },
+  { code: 'PNQ', city: 'Pune', name: 'Pune Airport', country: 'India' },
+  { code: 'GOI', city: 'Goa', name: 'Dabolim / Mopa Airport', country: 'India' },
+  { code: 'COK', city: 'Kochi', name: 'Cochin International', country: 'India' },
+  { code: 'TRV', city: 'Thiruvananthapuram', name: 'Trivandrum International', country: 'India' },
+  { code: 'JAI', city: 'Jaipur', name: 'Jaipur International', country: 'India' },
+  { code: 'LKO', city: 'Lucknow', name: 'Chaudhary Charan Singh', country: 'India' },
+  { code: 'IXC', city: 'Chandigarh', name: 'Chandigarh Airport', country: 'India' },
+  { code: 'PAT', city: 'Patna', name: 'Jay Prakash Narayan', country: 'India' },
+  { code: 'GAU', city: 'Guwahati', name: 'Lokpriya Gopinath Bordoloi', country: 'India' },
+  { code: 'BBI', city: 'Bhubaneswar', name: 'Biju Patnaik International', country: 'India' },
+  { code: 'IXB', city: 'Bagdogra', name: 'Bagdogra Airport', country: 'India' },
+  { code: 'VTZ', city: 'Visakhapatnam', name: 'Visakhapatnam Airport', country: 'India' },
+  { code: 'IXR', city: 'Ranchi', name: 'Birsa Munda Airport', country: 'India' },
+  { code: 'SXR', city: 'Srinagar', name: 'Sheikh ul-Alam International', country: 'India' },
+  { code: 'VNS', city: 'Varanasi', name: 'Lal Bahadur Shastri', country: 'India' },
+  { code: 'IXM', city: 'Madurai', name: 'Madurai Airport', country: 'India' },
+  { code: 'RPR', city: 'Raipur', name: 'Swami Vivekananda Airport', country: 'India' },
+  { code: 'IDR', city: 'Indore', name: 'Devi Ahilyabai Holkar', country: 'India' },
+  { code: 'NAG', city: 'Nagpur', name: 'Dr Babasaheb Ambedkar', country: 'India' },
+  { code: 'UDR', city: 'Udaipur', name: 'Maharana Pratap Airport', country: 'India' },
+  { code: 'IXZ', city: 'Port Blair', name: 'Veer Savarkar Airport', country: 'India' },
+  { code: 'CCJ', city: 'Calicut', name: 'Calicut International', country: 'India' },
+  { code: 'IXA', city: 'Agartala', name: 'Agartala Airport', country: 'India' },
+  { code: 'DED', city: 'Dehradun', name: 'Jolly Grant Airport', country: 'India' },
+  { code: 'IMF', city: 'Imphal', name: 'Imphal Airport', country: 'India' },
+  { code: 'BDQ', city: 'Vadodara', name: 'Vadodara Airport', country: 'India' },
+  { code: 'RAJ', city: 'Rajkot', name: 'Rajkot Airport', country: 'India' },
+  { code: 'IXS', city: 'Silchar', name: 'Silchar Airport', country: 'India' },
+  { code: 'CJB', city: 'Coimbatore', name: 'Coimbatore International', country: 'India' },
+  { code: 'TRZ', city: 'Tiruchirappalli', name: 'Tiruchirappalli International', country: 'India' },
+  { code: 'STV', city: 'Surat', name: 'Surat Airport', country: 'India' },
+  { code: 'IXE', city: 'Mangalore', name: 'Mangalore International', country: 'India' },
+
+  // International hubs
+  { code: 'SIN', city: 'Singapore', name: 'Changi Airport', country: 'Singapore' },
+  { code: 'DXB', city: 'Dubai', name: 'Dubai International', country: 'UAE' },
+  { code: 'AUH', city: 'Abu Dhabi', name: 'Zayed International', country: 'UAE' },
+  { code: 'DOH', city: 'Doha', name: 'Hamad International', country: 'Qatar' },
+  { code: 'LHR', city: 'London', name: 'Heathrow', country: 'United Kingdom' },
+  { code: 'LGW', city: 'London', name: 'Gatwick', country: 'United Kingdom' },
+  { code: 'JFK', city: 'New York', name: 'John F Kennedy', country: 'United States' },
+  { code: 'EWR', city: 'Newark', name: 'Newark Liberty', country: 'United States' },
+  { code: 'LAX', city: 'Los Angeles', name: 'Los Angeles International', country: 'United States' },
+  { code: 'SFO', city: 'San Francisco', name: 'San Francisco International', country: 'United States' },
+  { code: 'ORD', city: 'Chicago', name: "O'Hare International", country: 'United States' },
+  { code: 'BKK', city: 'Bangkok', name: 'Suvarnabhumi', country: 'Thailand' },
+  { code: 'DMK', city: 'Bangkok', name: 'Don Mueang', country: 'Thailand' },
+  { code: 'KUL', city: 'Kuala Lumpur', name: 'KL International', country: 'Malaysia' },
+  { code: 'HKG', city: 'Hong Kong', name: 'Hong Kong International', country: 'Hong Kong' },
+  { code: 'NRT', city: 'Tokyo', name: 'Narita International', country: 'Japan' },
+  { code: 'HND', city: 'Tokyo', name: 'Haneda', country: 'Japan' },
+  { code: 'ICN', city: 'Seoul', name: 'Incheon International', country: 'South Korea' },
+  { code: 'SYD', city: 'Sydney', name: 'Kingsford Smith', country: 'Australia' },
+  { code: 'MEL', city: 'Melbourne', name: 'Tullamarine', country: 'Australia' },
+  { code: 'FRA', city: 'Frankfurt', name: 'Frankfurt Airport', country: 'Germany' },
+  { code: 'CDG', city: 'Paris', name: 'Charles de Gaulle', country: 'France' },
+  { code: 'AMS', city: 'Amsterdam', name: 'Schiphol', country: 'Netherlands' },
+  { code: 'CMB', city: 'Colombo', name: 'Bandaranaike International', country: 'Sri Lanka' },
+  { code: 'KTM', city: 'Kathmandu', name: 'Tribhuvan International', country: 'Nepal' },
+  { code: 'DAC', city: 'Dhaka', name: 'Hazrat Shahjalal', country: 'Bangladesh' },
+  { code: 'MLE', city: 'Male', name: 'Velana International', country: 'Maldives' },
+  { code: 'YYZ', city: 'Toronto', name: 'Pearson International', country: 'Canada' },
+  { code: 'YVR', city: 'Vancouver', name: 'Vancouver International', country: 'Canada' },
+  { code: 'PEK', city: 'Beijing', name: 'Capital International', country: 'China' },
+  { code: 'PVG', city: 'Shanghai', name: 'Pudong International', country: 'China' },
+  { code: 'MNL', city: 'Manila', name: 'Ninoy Aquino', country: 'Philippines' },
+  { code: 'SGN', city: 'Ho Chi Minh City', name: 'Tan Son Nhat', country: 'Vietnam' },
+  { code: 'HAN', city: 'Hanoi', name: 'Noi Bai International', country: 'Vietnam' },
+  { code: 'CGK', city: 'Jakarta', name: 'Soekarno-Hatta', country: 'Indonesia' },
+  { code: 'DPS', city: 'Bali', name: 'Ngurah Rai International', country: 'Indonesia' },
+  { code: 'MCT', city: 'Muscat', name: 'Muscat International', country: 'Oman' },
+  { code: 'BAH', city: 'Bahrain', name: 'Bahrain International', country: 'Bahrain' },
+  { code: 'RUH', city: 'Riyadh', name: 'King Khalid International', country: 'Saudi Arabia' },
+  { code: 'JED', city: 'Jeddah', name: 'King Abdulaziz', country: 'Saudi Arabia' },
+  { code: 'IST', city: 'Istanbul', name: 'Istanbul Airport', country: 'Turkey' },
+  { code: 'CAI', city: 'Cairo', name: 'Cairo International', country: 'Egypt' },
+  { code: 'NBO', city: 'Nairobi', name: 'Jomo Kenyatta', country: 'Kenya' },
+  { code: 'JNB', city: 'Johannesburg', name: 'OR Tambo', country: 'South Africa' },
+  { code: 'FCO', city: 'Rome', name: 'Fiumicino', country: 'Italy' },
+  { code: 'BCN', city: 'Barcelona', name: 'El Prat', country: 'Spain' },
+  { code: 'MAD', city: 'Madrid', name: 'Barajas', country: 'Spain' },
+  { code: 'ZRH', city: 'Zurich', name: 'Zurich Airport', country: 'Switzerland' },
+  { code: 'MUC', city: 'Munich', name: 'Munich Airport', country: 'Germany' },
+  { code: 'ATH', city: 'Athens', name: 'Eleftherios Venizelos', country: 'Greece' },
+  { code: 'DUB', city: 'Dublin', name: 'Dublin Airport', country: 'Ireland' },
+  { code: 'GVA', city: 'Geneva', name: 'Geneva Airport', country: 'Switzerland' },
+  { code: 'BRU', city: 'Brussels', name: 'Brussels Airport', country: 'Belgium' },
+  { code: 'CPH', city: 'Copenhagen', name: 'Copenhagen Airport', country: 'Denmark' },
+  { code: 'ARN', city: 'Stockholm', name: 'Arlanda Airport', country: 'Sweden' },
+  { code: 'HEL', city: 'Helsinki', name: 'Helsinki-Vantaa', country: 'Finland' },
+];
+
+// ============================================================
+// PLATFORM DEFINITIONS
+// ============================================================
+const platforms = [
+  {
+    id: 'google_flights',
+    name: 'Google Flights',
+    color: '#4285f4',
+    tag: 'Meta Search',
+    tagClass: 'tag-meta',
+    desc: 'Best for date flexibility, price tracking, and fare calendar. Often shows lowest base fares.',
+    features: ['Price tracking', 'Date grid', 'Flexible dates', 'Price graph'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'economy', premium_economy: 'premiumeconomy', business: 'business', first: 'first' };
+      let q = `flights from ${getCity(from)} to ${getCity(to)} on ${formatDateReadable(dep)}`;
+      if (tripType === 'roundtrip' && ret) q += ` return ${formatDateReadable(ret)}`;
+      return `https://www.google.com/travel/flights?q=${encodeURIComponent(q)}&curr=INR`;
+    }
+  },
+  {
+    id: 'skyscanner',
+    name: 'Skyscanner',
+    color: '#0770e3',
+    tag: 'Aggregator',
+    tagClass: 'tag-aggregator',
+    desc: 'Searches 100s of airlines & OTAs. Great "whole month" and "cheapest month" views.',
+    features: ['Whole month view', 'Price alerts', 'Multi-city', 'Everywhere search'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const d = formatDateSS(dep);
+      let url = `https://www.skyscanner.co.in/transport/flights/${from.toLowerCase()}/${to.toLowerCase()}/${d}/`;
+      if (tripType === 'roundtrip' && ret) url += `${formatDateSS(ret)}/`;
+      url += `?adults=${pax}&cabinclass=${cls}&currency=INR&market=IN&locale=en-IN`;
+      return url;
+    }
+  },
+  {
+    id: 'kayak',
+    name: 'Kayak India',
+    color: '#ff690f',
+    tag: 'Meta Search',
+    tagClass: 'tag-meta',
+    desc: 'Powerful fare comparison with price forecasting. "Hacker fares" combine one-way tickets for savings.',
+    features: ['Hacker fares', 'Price forecast', 'Flexible dates', 'Explore map'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'e', premium_economy: 'p', business: 'b', first: 'f' };
+      let url = `https://www.kayak.co.in/flights/${from}-${to}/${dep}`;
+      if (tripType === 'roundtrip' && ret) url += `/${ret}`;
+      url += `?sort=price_a&fs=cabin=${clsMap[cls] || 'e'}&adults=${pax}`;
+      return url;
+    }
+  },
+  {
+    id: 'makemytrip',
+    name: 'MakeMyTrip',
+    color: '#e74c3c',
+    tag: 'OTA',
+    tagClass: 'tag-ota',
+    desc: 'India\'s largest OTA. Best bank card offers, coupon codes, and ICICI/HDFC discounts.',
+    features: ['Bank offers', 'Coupon codes', 'MyWallet cashback', 'Fare lock'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'E', premium_economy: 'PE', business: 'B', first: 'F' };
+      const isIntl = !isIndian(from) || !isIndian(to);
+      const depFmt = formatDateDDMMYYYY(dep);
+      let itin = `${from}-${to}-${depFmt}`;
+      if (tripType === 'roundtrip' && ret) itin += `_${to}-${from}-${formatDateDDMMYYYY(ret)}`;
+      const tt = tripType === 'roundtrip' ? 'R' : 'O';
+      return `https://www.makemytrip.com/flight/search?itinerary=${itin}&tripType=${tt}&paxType=A-${pax}_C-0_I-0&intl=${isIntl}&cabinClass=${clsMap[cls] || 'E'}&ccde=IN&lang=eng`;
+    }
+  },
+  {
+    id: 'goibibo',
+    name: 'Goibibo',
+    color: '#ee2e24',
+    tag: 'OTA',
+    tagClass: 'tag-ota',
+    desc: 'Part of MakeMyTrip group. GoCash+ wallet rewards and often has unique deals.',
+    features: ['GoCash+', 'Price lock', 'Flexifly', 'Smart filters'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'E', premium_economy: 'PE', business: 'B', first: 'F' };
+      const depFmt = dep.replace(/-/g, '');
+      let url = `https://www.goibibo.com/flights/air-${from}-${to}-${depFmt}-${pax}-0-0-${clsMap[cls] || 'E'}-D`;
+      return url;
+    }
+  },
+  {
+    id: 'cleartrip',
+    name: 'Cleartrip',
+    color: '#e74c3c',
+    tag: 'OTA',
+    tagClass: 'tag-ota',
+    desc: 'Clean interface, Flipkart-owned. Good UPI and Flipkart SuperCoin deals.',
+    features: ['Flipkart SuperCoins', 'UPI offers', 'Flexifly', 'Clean UI'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'Economy', premium_economy: 'PremiumEconomy', business: 'Business', first: 'First' };
+      const isIntl = !isIndian(from) || !isIndian(to);
+      let url = `https://www.cleartrip.com/flights/results?adults=${pax}&childs=0&infants=0&class=${clsMap[cls] || 'Economy'}&depart_date=${formatDateDDMMYYYY(dep)}&from=${from}&to=${to}&intl=${isIntl}`;
+      if (tripType === 'roundtrip' && ret) url += `&return_date=${formatDateDDMMYYYY(ret)}`;
+      return url;
+    }
+  },
+  {
+    id: 'ixigo',
+    name: 'ixigo',
+    color: '#f0c041',
+    tag: 'Aggregator',
+    tagClass: 'tag-aggregator',
+    desc: 'Indian aggregator with ixigo assured (free cancellation). Compares across OTAs.',
+    features: ['ixigo assured', 'Fare comparison', 'Price alerts', 'Calendar view'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'E', premium_economy: 'PE', business: 'B', first: 'F' };
+      const depFmt = dep.replace(/-/g, '');
+      let url = `https://www.ixigo.com/search/result/flight/${from}-${to}-${depFmt}`;
+      if (tripType === 'roundtrip' && ret) url += `-${ret.replace(/-/g, '')}`;
+      else url += '-';
+      url += `-${pax}-0-0-${clsMap[cls] || 'E'}-D`;
+      return url;
+    }
+  },
+  {
+    id: 'yatra',
+    name: 'Yatra',
+    color: '#d32f2f',
+    tag: 'OTA',
+    tagClass: 'tag-ota',
+    desc: 'SBI card partnership with exclusive discounts. Good for corporate and leisure bookings.',
+    features: ['SBI card offers', 'eCash wallet', 'Price drop protect', 'Multi-city'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'Economy', premium_economy: 'PremiumEconomy', business: 'Business', first: 'First' };
+      const isIntl = !isIndian(from) || !isIndian(to);
+      const sub = isIntl ? 'int' : 'dom2';
+      const depFmt = formatDateDDMMYYYY(dep);
+      let url = `https://flight.yatra.com/air-search-ui/${sub}/trigger?type=${tripType === 'roundtrip' ? 'R' : 'O'}&origin=${from}&destination=${to}&ADT=${pax}&CHD=0&INF=0&class=${clsMap[cls] || 'Economy'}&date=${depFmt}`;
+      if (tripType === 'roundtrip' && ret) url += `&rdate=${formatDateDDMMYYYY(ret)}`;
+      url += `&flt_Type=${tripType === 'roundtrip' ? 'rt' : 'ow'}`;
+      return url;
+    }
+  },
+  {
+    id: 'easemytrip',
+    name: 'EaseMyTrip',
+    color: '#2196f3',
+    tag: 'OTA',
+    tagClass: 'tag-ota',
+    desc: 'Zero convenience fee! Often the cheapest final price after all charges.',
+    features: ['ZERO conv. fee', 'No hidden charges', 'EMT rewards', 'Cheap intl'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'Economy', premium_economy: 'PremiumEconomy', business: 'Business', first: 'First' };
+      const depFmt = formatDateDDMonYYYY(dep);
+      let url = `https://flight.easemytrip.com/FlightList/Index?from=${from}&to=${to}&date=${depFmt}&adult=${pax}&child=0&infant=0&class=${clsMap[cls] || 'Economy'}&isExpress=false`;
+      if (tripType === 'roundtrip' && ret) url += `&rdate=${formatDateDDMonYYYY(ret)}`;
+      return url;
+    }
+  },
+  {
+    id: 'paytm',
+    name: 'Paytm Flights',
+    color: '#00baf2',
+    tag: 'OTA',
+    tagClass: 'tag-ota',
+    desc: 'UPI cashback and Paytm wallet discounts. Great for payment-method savings.',
+    features: ['UPI cashback', 'Wallet deals', 'First user bonus', 'Postpaid'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      return `https://tickets.paytm.com/flights`;
+    }
+  },
+  {
+    id: 'wego',
+    name: 'Wego',
+    color: '#00b277',
+    tag: 'Meta Search',
+    tagClass: 'tag-meta',
+    desc: 'Compares prices across OTAs and airlines. Good for finding deals others miss.',
+    features: ['Price comparison', 'Multi-OTA', 'Price alerts', 'Travel guides'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'economy', premium_economy: 'premiumeconomy', business: 'business', first: 'first' };
+      let url = `https://www.wego.co.in/flights/searches/new?origin=${from}&destination=${to}&departure_date=${dep}&adults=${pax}&children=0&infants=0&cabin=${clsMap[cls] || 'economy'}&sort=price`;
+      if (tripType === 'roundtrip' && ret) url += `&return_date=${ret}`;
+      return url;
+    }
+  },
+  {
+    id: 'momondo',
+    name: 'Momondo',
+    color: '#6a1b9a',
+    tag: 'Meta Search',
+    tagClass: 'tag-meta',
+    desc: 'Deep search engine that finds fares other meta-search tools miss. Great for international.',
+    features: ['Deep search', 'Flight insight', 'Price calendar', 'Open jaw'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'e', premium_economy: 'p', business: 'b', first: 'f' };
+      let url = `https://www.momondo.in/flight-search/${from}-${to}/${dep}`;
+      if (tripType === 'roundtrip' && ret) url += `/${ret}`;
+      url += `?sort=price&fs=cabin=${clsMap[cls] || 'e'}&adults=${pax}`;
+      return url;
+    }
+  },
+  {
+    id: 'trip_com',
+    name: 'Trip.com',
+    color: '#287dfa',
+    tag: 'OTA',
+    tagClass: 'tag-ota',
+    desc: 'Global OTA (Ctrip). Sometimes has exclusive rates from Chinese carriers and unique routings.',
+    features: ['Global reach', 'Unique routings', 'Price match', 'Trip coins'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      const clsMap = { economy: 'Y', premium_economy: 'S', business: 'C', first: 'F' };
+      const fc = getCity(from).toLowerCase().replace(/\s+/g, '-');
+      const tc = getCity(to).toLowerCase().replace(/\s+/g, '-');
+      return `https://www.trip.com/flights/${fc}-to-${tc}/tickets-${from.toLowerCase()}-${to.toLowerCase()}?dcity=${from}&acity=${to}&ddate=${dep}&class=${clsMap[cls] || 'Y'}&lowpricesource=searchform&quantity=${pax}`;
+    }
+  },
+  {
+    id: 'happyfares',
+    name: 'HappyFares',
+    color: '#ff9800',
+    tag: 'OTA',
+    tagClass: 'tag-ota',
+    desc: 'Low-markup OTA known for competitive pricing, especially on domestic routes.',
+    features: ['Low markup', 'Competitive domestic', 'Simple booking'],
+    getUrl: (from, to, dep, ret, pax, cls, tripType) => {
+      return `https://www.happyfares.in/`;
+    }
+  }
+];
+
+// ============================================================
+// FEE TRANSPARENCY DATA (per platform)
+// ============================================================
+const feeInfo = {
+  google_flights:  { level: 'none', badge: 'NO FEES', cls: 'fee-none', note: 'Meta-search only. Redirects to airline/OTA. No booking fee from Google.' },
+  skyscanner:      { level: 'none', badge: 'NO FEES', cls: 'fee-none', note: 'Meta-search. Redirects to booking site. No fee from Skyscanner itself.' },
+  kayak:           { level: 'none', badge: 'NO FEES', cls: 'fee-none', note: 'Meta-search. Redirects to airline/OTA. No fee from Kayak.' },
+  makemytrip:      { level: 'high', badge: 'CONV. FEE Rs.200-400', cls: 'fee-high', note: 'Adds Rs.200-400 convenience fee per passenger at checkout. Uncheck add-ons!' },
+  goibibo:         { level: 'high', badge: 'CONV. FEE Rs.200-350', cls: 'fee-high', note: 'Adds convenience fee. Same group as MakeMyTrip. Check total before paying.' },
+  cleartrip:       { level: 'medium', badge: 'CONV. FEE Rs.200-300', cls: 'fee-low', note: 'Charges convenience fee. Sometimes waived with UPI/wallet payment.' },
+  ixigo:           { level: 'none', badge: 'AGGREGATOR', cls: 'fee-none', note: 'Compares OTA prices. Redirects to booking site. Fee depends on OTA chosen.' },
+  yatra:           { level: 'high', badge: 'CONV. FEE Rs.200-400', cls: 'fee-high', note: 'Adds convenience fee per passenger. eCash may offset but locks you in.' },
+  easemytrip:      { level: 'zero', badge: 'ZERO CONV. FEE', cls: 'fee-zero', note: 'NO convenience fee charged! Often cheapest final price among OTAs.' },
+  paytm:           { level: 'medium', badge: 'LOW/NO FEE', cls: 'fee-low', note: 'Minimal or zero conv. fee on UPI payments. Check Paytm wallet cashback.' },
+  wego:            { level: 'none', badge: 'NO FEES', cls: 'fee-none', note: 'Meta-search. Redirects to OTA/airline. No fee from Wego.' },
+  momondo:         { level: 'none', badge: 'NO FEES', cls: 'fee-none', note: 'Meta-search by Kayak. Redirects to booking site. No fee from Momondo.' },
+  trip_com:        { level: 'medium', badge: 'LOW MARKUP', cls: 'fee-low', note: 'Minimal markup, sometimes cheaper than airline direct for intl routes.' },
+  happyfares:      { level: 'low', badge: 'LOW MARKUP', cls: 'fee-low', note: 'Low-markup OTA. Generally transparent pricing.' },
+};
+
+// ============================================================
+// DIRECT AIRLINE WEBSITES (Zero Commission)
+// ============================================================
+const airlines = [
+  // Indian airlines - Using reliable homepage URLs (deep-links to specific searches are fragile)
+  { id: 'indigo', name: 'IndiGo', color: '#002f5f', routes: 'domestic,international', hubs: ['DEL','BOM','BLR','HYD','CCU','MAA'],
+    getUrl: (from, to, dep, pax) => `https://www.goindigo.in/`,
+    note: 'Cheapest domestic carrier. Always check IndiGo direct first.' },
+  { id: 'airindia', name: 'Air India', color: '#e31837', routes: 'domestic,international', hubs: ['DEL','BOM','BLR','HYD','MAA','CCU'],
+    getUrl: (from, to, dep, pax) => `https://www.airindia.com/`,
+    note: 'Full-service. Web-exclusive fares. Good for international.' },
+  { id: 'spicejet', name: 'SpiceJet', color: '#ff0000', routes: 'domestic,international', hubs: ['DEL','HYD','BOM','MAA','CCU'],
+    getUrl: (from, to, dep, pax) => `https://www.spicejet.com/`,
+    note: 'Budget carrier. Flash sales can be extremely cheap.' },
+  { id: 'akasaair', name: 'Akasa Air', color: '#ff6600', routes: 'domestic', hubs: ['BOM','DEL','BLR','AMD'],
+    getUrl: (from, to, dep, pax) => `https://www.akasaair.com/`,
+    note: 'New budget carrier. Competitive prices on their routes.' },
+  { id: 'airasia', name: 'AirAsia', color: '#ff0000', routes: 'domestic,international', hubs: ['BLR','DEL','KUL','BKK'],
+    getUrl: (from, to, dep, pax) => `https://www.airasia.com/`,
+    note: 'Ultra-low-cost. BIG Sale events have fares from Rs.999.' },
+  // International airlines
+  { id: 'singapore', name: 'Singapore Airlines', color: '#00215b', routes: 'international', hubs: ['SIN'],
+    getUrl: (from, to, dep, pax) => `https://www.singaporeair.com/en_UK/plan-and-book/`,
+    note: 'KrisFlyer miles redemption. Book direct for award seats!' },
+  { id: 'emirates', name: 'Emirates', color: '#d71a21', routes: 'international', hubs: ['DXB'],
+    getUrl: (from, to, dep, pax) => `https://www.emirates.com/in/english/`,
+    note: 'Skywards miles redemption. Check for special India fares.' },
+  { id: 'airindiaexpress', name: 'Air India Express', color: '#cc0000', routes: 'international', hubs: ['DEL','BOM','COK','TRV','CCJ'],
+    getUrl: (from, to, dep, pax) => `https://www.airindiaexpress.com/`,
+    note: 'Budget intl to Gulf/SE Asia. Very competitive Middle East fares.' },
+  { id: 'etihad', name: 'Etihad Airways', color: '#bd8b13', routes: 'international', hubs: ['AUH'],
+    getUrl: (from, to, dep, pax) => `https://www.etihad.com/en-in/`,
+    note: 'Abu Dhabi hub. Competitive India fares with good connections.' },
+  { id: 'qatar', name: 'Qatar Airways', color: '#5c0632', routes: 'international', hubs: ['DOH'],
+    getUrl: (from, to, dep, pax) => `https://www.qatarairways.com/en-in/homepage.html`,
+    note: 'Doha hub. Excellent connectivity worldwide from India.' },
+];
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+const indianCodes = new Set(['DEL','BOM','BLR','MAA','HYD','CCU','AMD','PNQ','GOI','COK','TRV','JAI','LKO','IXC','PAT','GAU','BBI','IXB','VTZ','IXR','SXR','VNS','IXM','RPR','IDR','NAG','UDR','IXZ','CCJ','IXA','DED','IMF','BDQ','RAJ','IXS','CJB','TRZ','STV','IXE']);
+
+function isIndian(code) { return indianCodes.has(code); }
+
+function getCity(code) {
+  const ap = airports.find(a => a.code === code);
+  return ap ? ap.city : code;
+}
+
+function formatDateReadable(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function formatDateSS(dateStr) {
+  // YYMMDD
+  const parts = dateStr.split('-');
+  return parts[0].slice(2) + parts[1] + parts[2];
+}
+
+function formatDateDDMMYYYY(dateStr) {
+  const parts = dateStr.split('-');
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function formatDateDDMonYYYY(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${String(d.getDate()).padStart(2,'0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
+}
+
+// ============================================================
+// AUTOCOMPLETE
+// ============================================================
+function setupAutocomplete(inputId, codeId, listId) {
+  const input = document.getElementById(inputId);
+  const codeInput = document.getElementById(codeId);
+  const list = document.getElementById(listId);
+  let highlightIndex = -1;
+
+  input.addEventListener('input', function() {
+    const val = this.value.trim().toLowerCase();
+    codeInput.value = '';
+    if (val.length < 1) { list.style.display = 'none'; return; }
+
+    const matches = airports.filter(a =>
+      a.code.toLowerCase().includes(val) ||
+      a.city.toLowerCase().includes(val) ||
+      a.name.toLowerCase().includes(val) ||
+      a.country.toLowerCase().includes(val)
+    ).slice(0, 8);
+
+    if (matches.length === 0) { list.style.display = 'none'; return; }
+
+    list.innerHTML = matches.map((a, i) => `
+      <div class="autocomplete-item" data-code="${a.code}" data-index="${i}">
+        <div>
+          <span class="ac-code">${a.code}</span>
+          <span class="ac-city">${a.city} - ${a.name}</span>
+        </div>
+        <span class="ac-country">${a.country}</span>
+      </div>
+    `).join('');
+    list.style.display = 'block';
+    highlightIndex = -1;
+
+    list.querySelectorAll('.autocomplete-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const code = this.dataset.code;
+        const ap = airports.find(a => a.code === code);
+        input.value = `${ap.city} (${ap.code})`;
+        codeInput.value = code;
+        list.style.display = 'none';
+      });
+    });
+  });
+
+  input.addEventListener('keydown', function(e) {
+    const items = list.querySelectorAll('.autocomplete-item');
+    if (!items.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      highlightIndex = Math.min(highlightIndex + 1, items.length - 1);
+      updateHighlight(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      highlightIndex = Math.max(highlightIndex - 1, 0);
+      updateHighlight(items);
+    } else if (e.key === 'Enter' && highlightIndex >= 0) {
+      e.preventDefault();
+      items[highlightIndex].click();
+    } else if (e.key === 'Escape') {
+      list.style.display = 'none';
+    }
+  });
+
+  function updateHighlight(items) {
+    items.forEach((item, i) => {
+      item.classList.toggle('highlighted', i === highlightIndex);
+    });
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest(`#${inputId}`) && !e.target.closest(`#${listId}`)) {
+      list.style.display = 'none';
+    }
+  });
+}
+
+setupAutocomplete('from-input', 'from-code', 'from-ac');
+setupAutocomplete('to-input', 'to-code', 'to-ac');
+
+// ============================================================
+// TRIP TYPE
+// ============================================================
+let tripType = 'oneway';
+
+function setTripType(type) {
+  tripType = type;
+  document.querySelectorAll('.trip-type-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.type === type);
+  });
+  document.getElementById('ret-group').style.display = type === 'roundtrip' ? 'block' : 'none';
+}
+
+// Set minimum date to today
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('dep-date').min = today;
+document.getElementById('ret-date').min = today;
+document.getElementById('dep-date').addEventListener('change', function() {
+  document.getElementById('ret-date').min = this.value;
+});
+
+// ============================================================
+// SWAP AIRPORTS
+// ============================================================
+function swapAirports() {
+  const fromInput = document.getElementById('from-input');
+  const toInput = document.getElementById('to-input');
+  const fromCode = document.getElementById('from-code');
+  const toCode = document.getElementById('to-code');
+
+  const tmpVal = fromInput.value;
+  const tmpCode = fromCode.value;
+  fromInput.value = toInput.value;
+  fromCode.value = toCode.value;
+  toInput.value = tmpVal;
+  toCode.value = tmpCode;
+}
+
+// ============================================================
+// SEARCH FLIGHTS
+// ============================================================
+function searchFlights() {
+  const from = document.getElementById('from-code').value;
+  const to = document.getElementById('to-code').value;
+  const dep = document.getElementById('dep-date').value;
+  const ret = document.getElementById('ret-date').value;
+  const pax = document.getElementById('passengers').value;
+  const cls = document.getElementById('cabin-class').value;
+  const warning = document.getElementById('search-warning');
+
+  // Validation
+  if (!from || !to) {
+    warning.textContent = 'Please select both source and destination airports from the dropdown.';
+    warning.style.display = 'block';
+    return;
+  }
+  if (from === to) {
+    warning.textContent = 'Source and destination cannot be the same.';
+    warning.style.display = 'block';
+    return;
+  }
+  if (!dep) {
+    warning.textContent = 'Please select a departure date.';
+    warning.style.display = 'block';
+    return;
+  }
+  if (tripType === 'roundtrip' && !ret) {
+    warning.textContent = 'Please select a return date for round trip.';
+    warning.style.display = 'block';
+    return;
+  }
+  warning.style.display = 'none';
+
+  const resultsSection = document.getElementById('results-section');
+  const grid = document.getElementById('results-grid');
+  const subtitle = document.getElementById('results-subtitle');
+
+  subtitle.textContent = `${getCity(from)} (${from}) → ${getCity(to)} (${to}) | ${formatDateReadable(dep)}${tripType === 'roundtrip' && ret ? ' - ' + formatDateReadable(ret) : ''} | ${pax} Adult(s) | ${cls.replace('_', ' ')}`;
+
+  grid.innerHTML = '';
+
+  // Sort platforms: zero/no fee first, then low, then high
+  const feeOrder = { zero: 0, none: 1, low: 2, medium: 3, high: 4 };
+  const sortedPlatforms = [...platforms].sort((a, b) => {
+    const fa = feeInfo[a.id] ? feeOrder[feeInfo[a.id].level] : 3;
+    const fb = feeInfo[b.id] ? feeOrder[feeInfo[b.id].level] : 3;
+    return fa - fb;
+  });
+
+  sortedPlatforms.forEach((p, idx) => {
+    const url = p.getUrl(from, to, dep, ret, pax, cls, tripType);
+    const fee = feeInfo[p.id] || { badge: 'UNKNOWN', cls: 'fee-low', note: '' };
+    const card = document.createElement('div');
+    card.className = 'platform-card animate-in';
+    card.style.borderLeftColor = p.color;
+    card.style.animationDelay = `${idx * 0.05}s`;
+    card.innerHTML = `
+      <div class="platform-header">
+        <div>
+          <div class="platform-name" style="color: ${p.color}">${p.name}</div>
+          <span class="fee-badge ${fee.cls}">${fee.badge}</span>
+        </div>
+        <span class="platform-tag ${p.tagClass}">${p.tag}</span>
+      </div>
+      <div class="platform-desc">${p.desc}</div>
+      <div class="platform-desc" style="color:#b71c1c; font-weight:600; font-size:0.75rem;">${fee.note}</div>
+      <div class="platform-features">
+        ${p.features.map(f => `<span class="feature-chip">${f}</span>`).join('')}
+      </div>
+      <a class="btn-platform" href="${url}" target="_blank" rel="noopener" style="background: ${p.color}">
+        Search on ${p.name} &rarr;
+      </a>
+    `;
+    grid.appendChild(card);
+  });
+
+  resultsSection.style.display = 'block';
+
+  // Show direct airline booking section
+  showAirlineDirectLinks(from, to, dep, pax);
+
+  // Fetch live prices if server is available
+  if (serverAvailable) {
+    fetchLivePrices(from, to, dep, ret, pax, cls);
+  }
+
+  // Fetch visa info (works with or without server for international flights)
+  fetchVisaInfo(to);
+
+  // Scroll to prices if server available, otherwise to results
+  const scrollTarget = serverAvailable ? document.getElementById('price-section') : resultsSection;
+  scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============================================================
+// DIRECT AIRLINE LINKS
+// ============================================================
+function showAirlineDirectLinks(from, to, dep, pax) {
+  const section = document.getElementById('airlines-section');
+  const grid = document.getElementById('airlines-grid');
+  const isIntl = !isIndian(from) || !isIndian(to);
+
+  grid.innerHTML = '';
+  let count = 0;
+
+  airlines.forEach(al => {
+    // Show airline if it could serve this route
+    const routeMatch = isIntl ? al.routes.includes('international') : al.routes.includes('domestic');
+    // Also show if either airport is a hub
+    const hubMatch = al.hubs.some(h => h === from || h === to);
+
+    if (routeMatch || hubMatch) {
+      const url = al.getUrl(from, to, dep, pax);
+      const card = document.createElement('div');
+      card.className = 'airline-card visible animate-in';
+      card.style.borderTopColor = al.color;
+      card.style.animationDelay = `${count * 0.05}s`;
+      card.innerHTML = `
+        <div class="airline-name">${al.name}</div>
+        <div class="airline-note">${al.note}</div>
+        <div style="margin-bottom:8px;"><span class="fee-badge fee-zero">ZERO COMMISSION</span></div>
+        <a class="btn-airline" href="${url}" target="_blank" rel="noopener" style="background:${al.color}">
+          Book Direct &rarr;
+        </a>
+      `;
+      grid.appendChild(card);
+      count++;
+    }
+  });
+
+  section.style.display = count > 0 ? 'block' : 'none';
+}
+
+// ============================================================
+// OPEN ALL PLATFORMS
+// ============================================================
+function openAllPlatforms() {
+  const from = document.getElementById('from-code').value;
+  const to = document.getElementById('to-code').value;
+  const dep = document.getElementById('dep-date').value;
+  const ret = document.getElementById('ret-date').value;
+  const pax = document.getElementById('passengers').value;
+  const cls = document.getElementById('cabin-class').value;
+  const warning = document.getElementById('search-warning');
+
+  if (!from || !to) {
+    warning.textContent = 'Please select both source and destination airports from the dropdown.';
+    warning.style.display = 'block';
+    return;
+  }
+  if (!dep) {
+    warning.textContent = 'Please select a departure date.';
+    warning.style.display = 'block';
+    return;
+  }
+  if (tripType === 'roundtrip' && !ret) {
+    warning.textContent = 'Please select a return date for round trip.';
+    warning.style.display = 'block';
+    return;
+  }
+  warning.style.display = 'none';
+
+  // Show results first
+  searchFlights();
+
+  // Open top platforms in new tabs (limit to avoid popup blockers)
+  const topPlatforms = ['google_flights', 'skyscanner', 'kayak', 'makemytrip', 'goibibo', 'easemytrip', 'ixigo'];
+  let opened = 0;
+
+  topPlatforms.forEach((id, i) => {
+    const p = platforms.find(pl => pl.id === id);
+    if (p) {
+      setTimeout(() => {
+        const url = p.getUrl(from, to, dep, ret, pax, cls, tripType);
+        window.open(url, '_blank');
+        opened++;
+      }, i * 300); // Stagger to avoid popup blocker
+    }
+  });
+
+  // Show note about popup blocker
+  const warning2 = document.getElementById('search-warning');
+  warning2.textContent = `Opening ${topPlatforms.length} sites in new tabs. If blocked, please allow popups for this page or click each card individually.`;
+  warning2.style.display = 'block';
+  warning2.style.background = '#e3f2fd';
+  warning2.style.borderColor = '#2196f3';
+  warning2.style.color = '#1565c0';
+}
+
+// ============================================================
+// MILES CALCULATOR
+// ============================================================
+function calculateMiles() {
+  const kfMiles = parseInt(document.getElementById('krisflyer-miles').value) || 0;
+  const swMiles = parseInt(document.getElementById('skywards-miles').value) || 0;
+  const ccType = document.getElementById('cc-type');
+  const ccPoints = parseInt(document.getElementById('cc-points').value) || 0;
+  const ccValPerPoint = ccType.selectedOptions[0]?.dataset?.val ? parseFloat(ccType.selectedOptions[0].dataset.val) : 0;
+
+  // Second credit card
+  const ccType2 = document.getElementById('cc-type-2');
+  const ccPoints2 = parseInt(document.getElementById('cc-points-2').value) || 0;
+  const ccValPerPoint2 = ccType2.selectedOptions[0]?.dataset?.val ? parseFloat(ccType2.selectedOptions[0].dataset.val) : 0;
+
+  const kfValue = kfMiles * 1.10; // avg Rs.1.10 per KrisFlyer mile
+  const swValue = swMiles * 0.90; // avg Rs.0.90 per Skywards mile
+  const ccValue = ccPoints * ccValPerPoint;
+  const ccValue2 = ccPoints2 * ccValPerPoint2;
+  const totalValue = kfValue + swValue + ccValue + ccValue2;
+
+  const resultDiv = document.getElementById('miles-result');
+  const breakdownDiv = document.getElementById('miles-breakdown');
+  const totalDiv = document.getElementById('miles-total-value');
+
+  let items = [];
+
+  if (kfMiles > 0) {
+    items.push(`
+      <div class="miles-item">
+        <div class="label">Singapore KrisFlyer (${kfMiles.toLocaleString()} miles)</div>
+        <div class="value">Rs.${Math.round(kfValue).toLocaleString()}</div>
+      </div>
+    `);
+  }
+  if (swMiles > 0) {
+    items.push(`
+      <div class="miles-item">
+        <div class="label">Emirates Skywards (${swMiles.toLocaleString()} miles)</div>
+        <div class="value">Rs.${Math.round(swValue).toLocaleString()}</div>
+      </div>
+    `);
+  }
+  if (ccPoints > 0 && ccValPerPoint > 0) {
+    const cardName = ccType.selectedOptions[0]?.text?.split('(')[0]?.trim() || 'Credit Card';
+    items.push(`
+      <div class="miles-item">
+        <div class="label">${cardName} (${ccPoints.toLocaleString()} pts @ Rs.${ccValPerPoint}/pt)</div>
+        <div class="value">Rs.${Math.round(ccValue).toLocaleString()}</div>
+      </div>
+    `);
+  }
+  if (ccPoints2 > 0 && ccValPerPoint2 > 0) {
+    const cardName2 = ccType2.selectedOptions[0]?.text?.split('(')[0]?.trim() || 'Credit Card 2';
+    items.push(`
+      <div class="miles-item">
+        <div class="label">${cardName2} (${ccPoints2.toLocaleString()} pts @ Rs.${ccValPerPoint2}/pt)</div>
+        <div class="value">Rs.${Math.round(ccValue2).toLocaleString()}</div>
+      </div>
+    `);
+  }
+
+  if (items.length === 0) {
+    items.push(`
+      <div class="miles-item">
+        <div class="label">No miles or points entered</div>
+        <div class="value">Rs.0</div>
+      </div>
+    `);
+  }
+
+  breakdownDiv.innerHTML = items.join('');
+  totalDiv.textContent = `Rs.${Math.round(totalValue).toLocaleString()}`;
+  resultDiv.style.display = 'block';
+
+  // Add redemption tips
+  if (totalValue > 0) {
+    let tipHtml = '<div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.2);">';
+    tipHtml += '<h4 style="margin-bottom:8px; font-size:0.9rem;">Smart Redemption Tips:</h4>';
+    tipHtml += '<ul style="font-size:0.8rem; opacity:0.85; padding-left:20px; line-height:1.8;">';
+
+    if (kfMiles >= 7500) {
+      tipHtml += '<li><b>KrisFlyer:</b> You have enough for short-haul Economy saver awards (7,500 miles one-way). Check singaporeair.com for saver availability.</li>';
+    }
+    if (kfMiles >= 17500) {
+      tipHtml += '<li><b>KrisFlyer:</b> Enough for SIN-India Economy saver (17,500 miles one-way). Great value!</li>';
+    }
+    if (kfMiles >= 35000) {
+      tipHtml += '<li><b>KrisFlyer:</b> Enough for SIN-India Business saver (35,000 miles one-way). Check for availability - excellent value at ~Rs.3-5 per mile.</li>';
+    }
+    if (swMiles >= 7500) {
+      tipHtml += '<li><b>Skywards:</b> You have enough for Economy short-haul awards (7,500+ miles). Check emirates.com/skywards.</li>';
+    }
+    if (swMiles >= 27500) {
+      tipHtml += '<li><b>Skywards:</b> Enough for DXB-India Economy award (27,500 miles one-way). Decent value.</li>';
+    }
+    if (swMiles >= 50000) {
+      tipHtml += '<li><b>Skywards:</b> Enough for Business class DXB-India (50,000 miles). Business class gives ~2x per-mile value vs economy.</li>';
+    }
+    if (ccValue >= 500 || ccValue2 >= 500) {
+      tipHtml += '<li><b>Credit Card Points:</b> Consider transferring to airline partners (KrisFlyer/Skywards) for potentially better value than direct redemption, especially for premium cabin awards.</li>';
+    }
+
+    // Scapia-specific tips
+    const isScapia1 = ccType.value === 'scapia';
+    const isScapia2 = ccType2.value === 'scapia';
+    if (isScapia1 || isScapia2) {
+      const scapiaPoints = isScapia1 ? ccPoints : ccPoints2;
+      tipHtml += '<li><b>Scapia:</b> Scapia points can be used DIRECTLY for flight bookings on the Scapia app at Rs.1/point. This is one of the best point values in India. Book flights directly through the Scapia app for maximum value.</li>';
+      if (scapiaPoints >= 5000) {
+        tipHtml += '<li><b>Scapia:</b> With ' + scapiaPoints.toLocaleString() + ' points (Rs.' + scapiaPoints.toLocaleString() + ' value), you can offset a significant portion of a domestic flight fare.</li>';
+      }
+    }
+
+    // IDFC-specific tips
+    const isIDFC1 = ccType.value && ccType.value.startsWith('idfc_');
+    const isIDFC2 = ccType2.value && ccType2.value.startsWith('idfc_');
+    if (isIDFC1 || isIDFC2) {
+      tipHtml += '<li><b>IDFC First:</b> IDFC reward points can be redeemed on the IDFC First bank app/website. Consider using them for statement credit against flight purchases, or transfer to airline partners if available for better per-point value.</li>';
+    }
+
+    tipHtml += '<li><b>General:</b> Compare the cash fare cost vs points. If the fare is cheaper than your points value, pay cash and save points for expensive premium fares.</li>';
+    tipHtml += '</ul></div>';
+
+    // Remove old tips before adding new ones
+    const existingTips = resultDiv.querySelectorAll('.redemption-tips');
+    existingTips.forEach(el => el.remove());
+
+    const tipDiv = document.createElement('div');
+    tipDiv.className = 'redemption-tips';
+    tipDiv.innerHTML = tipHtml;
+    breakdownDiv.parentNode.insertBefore(tipDiv, breakdownDiv.nextSibling);
+  }
+}
+
+// ============================================================
+// SERVER DETECTION & LIVE PRICES
+// ============================================================
+let serverAvailable = false;
+
+async function checkServer() {
+  try {
+    const resp = await fetch('/api/health', { signal: AbortSignal.timeout(2000) });
+    if (resp.ok) {
+      const data = await resp.json();
+      serverAvailable = data.server && data.apiConfigured;
+      if (serverAvailable) {
+        const badge = document.getElementById('price-mode-badge');
+        badge.textContent = data.mode === 'test' ? 'TEST DATA' : 'LIVE PRICES';
+        document.getElementById('no-server-note').style.display = 'none';
+      } else if (data.server && !data.apiConfigured) {
+        document.getElementById('no-server-note').style.display = 'block';
+        document.querySelector('#no-server-note .no-server-note').innerHTML =
+          '<b>Server running but API key not set.</b> Add your free RapidAPI key to the <code>.env</code> file and restart.<br>' +
+          '1. Go to <a href="https://rapidapi.com/apiheya/api/sky-scrapper" target="_blank">rapidapi.com/apiheya/api/sky-scrapper</a><br>' +
+          '2. Click "Subscribe to Test" (FREE) → copy your API key<br>' +
+          '3. Edit <code>.env</code>: set <code>RAPIDAPI_KEY=your_key</code> → restart server';
+      }
+    }
+  } catch (e) {
+    serverAvailable = false;
+    // Show note only if we're running from localhost (server expected)
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      document.getElementById('no-server-note').style.display = 'block';
+    }
+  }
+}
+
+// Check server on page load
+checkServer();
+
+async function fetchLivePrices(from, to, dep, ret, pax, cls) {
+  const priceSection = document.getElementById('price-section');
+  const statusDiv = document.getElementById('price-status');
+  const summaryDiv = document.getElementById('price-summary');
+  const listDiv = document.getElementById('flight-list');
+  const compareDiv = document.getElementById('ota-compare');
+
+  priceSection.style.display = 'block';
+  statusDiv.style.display = 'block';
+  summaryDiv.style.display = 'none';
+  listDiv.innerHTML = '';
+  compareDiv.style.display = 'none';
+
+  const params = new URLSearchParams({
+    from, to, date: dep, adults: pax, cabinClass: cls
+  });
+  if (ret && tripType === 'roundtrip') params.set('returnDate', ret);
+
+  try {
+    const resp = await fetch(`/api/search?${params}`);
+    const data = await resp.json();
+
+    statusDiv.style.display = 'none';
+
+    if (data.error) {
+      let errorHTML = `<div class="price-status" style="color:#b71c1c;">${data.error}</div>`;
+      if (data.suggestion) {
+        errorHTML += `<div class="price-status" style="color:#e65100; font-size:0.85rem; margin-top:8px;">${data.suggestion}</div>`;
+      }
+      if (data.setupInstructions) {
+        errorHTML += `<div style="background:#fff3e0; border:1px solid #ffe0b2; border-radius:8px; padding:14px; margin-top:12px; font-size:0.82rem; line-height:1.7;">
+          <strong>Setup free backup API (3,000 searches/month):</strong><br>
+          ${data.setupInstructions.map(s => s).join('<br>')}
+        </div>`;
+      }
+      listDiv.innerHTML = errorHTML;
+      return;
+    }
+
+    if (!data.flights || data.flights.length === 0) {
+      listDiv.innerHTML = '<div class="price-status">No flights found for this route and date. Try different dates or a nearby airport.</div>';
+      return;
+    }
+
+    // Render summary cards
+    const cheapest = data.flights[0];
+    const directFlights = data.flights.filter(f => f.itineraries.every(i => i.stops === 0));
+    const cheapestDirect = directFlights.length > 0 ? directFlights[0] : null;
+
+    let summaryHTML = `
+      <div class="summary-card best">
+        <div class="label">Cheapest Price</div>
+        <div class="value">Rs.${Math.round(cheapest.price.total).toLocaleString()}</div>
+        <div class="sub">${cheapest.airline.name} | ${cheapest.itineraries[0].stops === 0 ? 'Direct' : cheapest.itineraries[0].stops + ' stop(s)'}</div>
+      </div>
+    `;
+    if (cheapestDirect && cheapestDirect.id !== cheapest.id) {
+      summaryHTML += `
+        <div class="summary-card">
+          <div class="label">Cheapest Direct</div>
+          <div class="value">Rs.${Math.round(cheapestDirect.price.total).toLocaleString()}</div>
+          <div class="sub">${cheapestDirect.airline.name}</div>
+        </div>
+      `;
+    }
+    summaryHTML += `
+      <div class="summary-card">
+        <div class="label">Total Options Found</div>
+        <div class="value">${data.flights.length}</div>
+        <div class="sub">Across ${[...new Set(data.flights.map(f => f.airline.name))].length} airline(s)</div>
+      </div>
+    `;
+    // Show potential OTA savings
+    const otaSaving = 350; // avg OTA convenience fee
+    summaryHTML += `
+      <div class="summary-card">
+        <div class="label">OTA Conv. Fee You Save</div>
+        <div class="value" style="color:#00c853;">Rs.${(otaSaving * parseInt(pax)).toLocaleString()}</div>
+        <div class="sub">By booking airline direct (per booking)</div>
+      </div>
+    `;
+    summaryDiv.innerHTML = summaryHTML;
+    summaryDiv.style.display = 'grid';
+
+    // Render flight cards
+    data.flights.forEach((flight, idx) => {
+      const itin = flight.itineraries[0];
+      const firstSeg = itin.segments[0];
+      const lastSeg = itin.segments[itin.segments.length - 1];
+      const duration = formatDuration(itin.duration);
+      const depTime = formatTime(firstSeg.departure.at);
+      const arrTime = formatTime(lastSeg.arrival.at);
+      const stops = itin.stops;
+      const stopsLabel = stops === 0 ? 'Direct' : `${stops} stop${stops > 1 ? 's' : ''}`;
+      const stopsClass = stops === 0 ? 'direct' : '';
+
+      let badges = '';
+      if (flight.isCheapest) badges += '<span class="flight-badge badge-cheapest">CHEAPEST</span>';
+      if (flight.isFastest && !flight.isCheapest) badges += '<span class="flight-badge badge-fastest">FASTEST</span>';
+      if (flight.isBestDirect && !flight.isCheapest) badges += '<span class="flight-badge badge-best-direct">BEST DIRECT</span>';
+
+      let cardClass = 'flight-card';
+      if (flight.isCheapest) cardClass += ' cheapest-card';
+      else if (flight.isFastest) cardClass += ' fastest-card';
+
+      // Build airline direct booking URL
+      const airlineUrl = getAirlineBookingUrl(flight.airline.code, from, to, dep, pax);
+
+      const card = document.createElement('div');
+      card.className = `${cardClass} animate-in`;
+      card.style.animationDelay = `${idx * 0.04}s`;
+      card.innerHTML = `
+        ${badges}
+        <div class="flight-airline">
+          <div class="name">${flight.airline.name}</div>
+          <div class="code">${itin.segments.map(s => s.flightNumber).join(' → ')}</div>
+        </div>
+        <div class="flight-route">
+          <div class="flight-time">
+            <div class="time">${depTime}</div>
+            <div class="airport">${firstSeg.departure.iataCode}</div>
+          </div>
+          <div class="flight-path">
+            <div class="duration">${duration}</div>
+            <div class="line"></div>
+            <div class="stops-label ${stopsClass}">${stopsLabel}</div>
+          </div>
+          <div class="flight-time">
+            <div class="time">${arrTime}</div>
+            <div class="airport">${lastSeg.arrival.iataCode}</div>
+          </div>
+        </div>
+        <div class="flight-price">
+          <div class="amount">Rs.${Math.round(flight.price.total).toLocaleString()}</div>
+          <div class="per-person">${parseInt(pax) > 1 ? 'total for ' + pax + ' pax' : 'per person'}</div>
+        </div>
+        <div style="text-align:right;">
+          <a href="${airlineUrl}" target="_blank" rel="noopener" class="btn-platform" style="background:#00c853; padding:8px 14px; font-size:0.8rem; width:auto; display:inline-block;">
+            Book Direct &rarr;
+          </a>
+        </div>
+      `;
+      listDiv.appendChild(card);
+    });
+
+    // Render OTA comparison table
+    if (data.otaComparison && data.otaComparison.length > 0) {
+      let tableHTML = '<h3>What You Would Pay on Each Platform (for cheapest flight Rs.' + Math.round(cheapest.price.total).toLocaleString() + ')</h3>';
+      tableHTML += `<table class="ota-table">
+        <thead><tr><th>Platform</th><th>Base Fare</th><th>Conv. Fee / Markup</th><th>Total You Pay</th><th>Verdict</th></tr></thead>
+        <tbody>`;
+
+      data.otaComparison.forEach(ota => {
+        const isRec = ota.recommended;
+        const rowClass = isRec ? 'ota-recommended' : '';
+        const feeClass = ota.fee > 0 ? 'ota-warning' : 'ota-good';
+        const totalClass = isRec ? 'ota-good' : '';
+        const badge = isRec ? '<span class="ota-best-badge">BEST</span>' : '';
+
+        tableHTML += `<tr class="${rowClass}">
+          <td>${ota.name}${badge}</td>
+          <td>Rs.${Math.round(cheapest.price.total).toLocaleString()}</td>
+          <td class="${feeClass}">Rs.${ota.fee.toLocaleString()}</td>
+          <td class="${totalClass}" style="font-weight:700;">Rs.${Math.round(ota.total).toLocaleString()}</td>
+          <td style="font-size:0.8rem;">${ota.reason}</td>
+        </tr>`;
+      });
+
+      tableHTML += '</tbody></table>';
+      tableHTML += '<p style="margin-top:12px; font-size:0.75rem; color:#888;">* Convenience fees are estimates based on typical charges. Actual fees may vary. Always check the final checkout price.</p>';
+      compareDiv.innerHTML = tableHTML;
+      compareDiv.style.display = 'block';
+    }
+
+  } catch (err) {
+    statusDiv.style.display = 'none';
+    listDiv.innerHTML = `<div class="price-status" style="color:#b71c1c;">Failed to fetch prices: ${err.message}. The search links below still work.</div>`;
+  }
+}
+
+// Format ISO duration PT2H30M → 2h 30m
+function formatDuration(dur) {
+  if (!dur) return '';
+  const match = dur.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+  if (!match) return dur;
+  const h = match[1] || '0';
+  const m = match[2] || '0';
+  return `${h}h ${m}m`;
+}
+
+// Format datetime → HH:MM
+function formatTime(dt) {
+  if (!dt) return '';
+  const time = dt.split('T')[1];
+  return time ? time.substring(0, 5) : '';
+}
+
+// Map airline IATA codes to booking URLs
+function getAirlineBookingUrl(code, from, to, dep, pax) {
+  const airlineUrls = {
+    '6E': `https://www.goindigo.in/`,
+    'AI': `https://www.airindia.com/in/en/book.html`,
+    'UK': `https://www.airindia.com/in/en/book.html`,
+    'SG': `https://www.spicejet.com/`,
+    'QP': `https://www.akasaair.com/`,
+    'I5': `https://www.airasia.com/flights`,
+    'IX': `https://www.airindiaexpress.com/`,
+    'SQ': `https://www.singaporeair.com/en_UK/plan-and-book/`,
+    'EK': `https://www.emirates.com/in/english/book/`,
+    'EY': `https://www.etihad.com/en-in/`,
+    'QR': `https://www.qatarairways.com/en-in/book.html`,
+    'TK': `https://www.turkishairlines.com/en-int/flights/`,
+    'LH': `https://www.lufthansa.com/in/en/flight-search`,
+    'BA': `https://www.britishairways.com/travel/book/public/en_in`,
+    'AF': `https://www.airfrance.co.in/`,
+    'KL': `https://www.klm.co.in/`,
+    'TG': `https://www.thaiairways.com/`,
+    'MH': `https://www.malaysiaairlines.com/`,
+    'CX': `https://www.cathaypacific.com/`,
+    'NH': `https://www.ana.co.jp/en/in/`,
+    'JL': `https://www.jal.co.jp/en/`,
+    'OZ': `https://flyasiana.com/`,
+    'WY': `https://www.omanair.com/`,
+    'GF': `https://www.gulfair.com/`,
+    'UL': `https://www.srilankan.com/`,
+    'WS': `https://www.westjet.com/`,
+    'AC': `https://www.aircanada.com/`,
+  };
+  return airlineUrls[code] || `https://www.google.com/travel/flights?q=flights+from+${from}+to+${to}+on+${dep}&curr=INR`;
+}
+
+// ============================================================
+// ============================================================
+// US VISA TOGGLE
+// ============================================================
+let hasUSVisa = false;
+
+function toggleUSVisa() {
+  hasUSVisa = !hasUSVisa;
+  const toggle = document.getElementById('us-visa-toggle');
+  const label = document.getElementById('us-visa-label');
+  toggle.classList.toggle('active', hasUSVisa);
+  label.textContent = hasUSVisa ? 'Yes' : 'No';
+  // Re-render visa info if already displayed
+  const section = document.getElementById('visa-section');
+  if (section.style.display === 'block' && lastVisaData) {
+    renderVisaCard(lastVisaData);
+  }
+}
+
+// ============================================================
+// VISA INFO FETCH & RENDER
+// ============================================================
+let lastVisaData = null;
+
+async function fetchVisaInfo(destinationIata) {
+  const section = document.getElementById('visa-section');
+  const content = document.getElementById('visa-content');
+
+  // Check if destination is Indian (domestic)
+  const indianCodes2 = new Set(['DEL','BOM','BLR','MAA','HYD','CCU','AMD','PNQ','GOI','COK','TRV','JAI','LKO','IXC','PAT','GAU','BBI','IXB','VTZ','IXR','SXR','VNS','IXM','RPR','IDR','NAG','UDR','IXZ','CCJ','IXA','DED','IMF','BDQ','RAJ','IXS','CJB','TRZ','STV','IXE']);
+  if (indianCodes2.has(destinationIata)) {
+    lastVisaData = { domestic: true, country: 'India', visa_type: 'not_required', message: 'Domestic flight - no visa or passport required. Carry a valid government photo ID (Aadhaar, DL, Voter ID, etc.).' };
+    renderVisaCard(lastVisaData);
+    section.style.display = 'block';
+    return;
+  }
+
+  // Try server first
+  try {
+    const resp = await fetch(`/api/visa?destination=${destinationIata}`);
+    if (resp.ok) {
+      const data = await resp.json();
+      lastVisaData = data;
+      renderVisaCard(data);
+      section.style.display = 'block';
+      return;
+    }
+  } catch (e) {
+    // Server not available, use client-side fallback
+  }
+
+  // Client-side fallback for common destinations
+  const fallbackVisa = getClientSideVisaInfo(destinationIata);
+  if (fallbackVisa) {
+    lastVisaData = fallbackVisa;
+    renderVisaCard(fallbackVisa);
+    section.style.display = 'block';
+  } else {
+    section.style.display = 'none';
+  }
+}
+
+// Client-side visa data (works without server)
+function getClientSideVisaInfo(iata) {
+  const visaMap = {
+    // Visa Free
+    KTM: { country: 'Nepal', visa_type: 'visa_free', max_stay: 'Unlimited', fee: 'Free', notes: 'No visa required. Open border. Carry passport or voter ID.', us_visa_benefit: false, apply_url: null },
+    MLE: { country: 'Maldives', visa_type: 'visa_free', max_stay: '30 days', fee: 'Free', notes: 'Free tourist visa on arrival. Need return ticket + hotel booking.', us_visa_benefit: false, apply_url: null },
+    BKK: { country: 'Thailand', visa_type: 'visa_free', max_stay: '30 days', fee: 'Free', notes: 'Visa-free. Reduced to 30 days from 15 Sep 2026. Complete Thailand Digital Arrival Card online.', us_visa_benefit: false, apply_url: 'https://tdac.immigration.go.th', apply_label: 'Fill Thailand Digital Arrival Card' },
+    DMK: { country: 'Thailand', visa_type: 'visa_free', max_stay: '30 days', fee: 'Free', notes: 'Visa-free. Reduced to 30 days from 15 Sep 2026.', us_visa_benefit: false, apply_url: 'https://tdac.immigration.go.th', apply_label: 'Fill Thailand Digital Arrival Card' },
+    KUL: { country: 'Malaysia', visa_type: 'visa_free', max_stay: '30 days', fee: 'Free', notes: 'Visa-free until 31 Dec 2026. Complete MDAC before arrival.', us_visa_benefit: false, apply_url: 'https://imigresen-online.imi.gov.my/mdac/main', apply_label: 'Fill Malaysia Digital Arrival Card' },
+    NBO: { country: 'Kenya', visa_type: 'visa_free', max_stay: '90 days', fee: 'Free', notes: 'Visa-free since mid-2025.', us_visa_benefit: false, apply_url: 'https://www.etakenya.go.ke', apply_label: 'Kenya eTA (optional)' },
+    HKG: { country: 'Hong Kong', visa_type: 'visa_free', max_stay: '14 days', fee: 'Free', notes: 'Visa-free but must complete free Pre-Arrival Registration (PAR) online.', us_visa_benefit: false, apply_url: 'https://www.immd.gov.hk/eng/services/visas/pre-arrival_registration.html', apply_label: 'Pre-Arrival Registration (PAR)' },
+    MNL: { country: 'Philippines', visa_type: 'visa_free', max_stay: '14 days (30 with US visa)', fee: 'Free', notes: '14 days visa-free. With valid US visa: 30 days.', us_visa_benefit: true, us_visa_detail: '30 days visa-free instead of 14 days with valid US visa.', apply_url: null },
+    // Visa on Arrival
+    DOH: { country: 'Qatar', visa_type: 'visa_on_arrival', max_stay: '30 days', fee: 'Free', notes: 'Free visa on arrival at Hamad International Airport.', us_visa_benefit: false, apply_url: null },
+    DPS: { country: 'Indonesia (Bali)', visa_type: 'visa_on_arrival', max_stay: '30 days', fee: '~Rs.2,700', notes: 'Paid VoA. Budget ~Rs.3,500 total with tourist levy.', us_visa_benefit: false, apply_url: 'https://molina.imigrasi.go.id', apply_label: 'Apply Indonesia e-VoA' },
+    CMB: { country: 'Sri Lanka', visa_type: 'free_eta', max_stay: '30 days', fee: 'Free', notes: 'Free ETA since May 2026. Apply at eta.gov.lk.', us_visa_benefit: false, apply_url: 'https://eta.gov.lk', apply_label: 'Apply Free ETA' },
+    // E-Visa
+    SIN: { country: 'Singapore', visa_type: 'e_visa', max_stay: '30 days', fee: 'SGD 30+', notes: 'Must apply via Authorised Visa Agent (SAVE system). 3-5 days processing.', us_visa_benefit: false, apply_url: 'https://www.ica.gov.sg/enter-transit-depart/entering-singapore/visa_requirements', apply_label: 'Singapore Visa Info (ICA)' },
+    SGN: { country: 'Vietnam', visa_type: 'e_visa', max_stay: '90 days', fee: 'USD 25-50', notes: 'E-visa available. Apply online, 3 working days.', us_visa_benefit: false, apply_url: 'https://evisa.xuatnhapcanh.gov.vn', apply_label: 'Apply Vietnam e-Visa' },
+    HAN: { country: 'Vietnam', visa_type: 'e_visa', max_stay: '90 days', fee: 'USD 25-50', notes: 'E-visa available.', us_visa_benefit: false, apply_url: 'https://evisa.xuatnhapcanh.gov.vn', apply_label: 'Apply Vietnam e-Visa' },
+    NRT: { country: 'Japan', visa_type: 'e_visa', max_stay: '15-90 days', fee: 'Varies', notes: 'Japan eVISA available for Indian citizens.', us_visa_benefit: false, apply_url: 'https://www.evisa.mofa.go.jp', apply_label: 'Apply Japan e-Visa' },
+    HND: { country: 'Japan', visa_type: 'e_visa', max_stay: '15-90 days', fee: 'Varies', notes: 'Japan eVISA available for Indian citizens.', us_visa_benefit: false, apply_url: 'https://www.evisa.mofa.go.jp', apply_label: 'Apply Japan e-Visa' },
+    IST: { country: 'Turkey', visa_type: 'e_visa', max_stay: '30 days', fee: 'Varies', notes: 'E-visa ONLY with valid US/UK/Schengen visa.', us_visa_benefit: true, us_visa_detail: 'US visa required to qualify for Turkey e-Visa.', apply_url: 'https://www.evisa.gov.tr', apply_label: 'Apply Turkey e-Visa' },
+    CAI: { country: 'Egypt', visa_type: 'e_visa', max_stay: '30 days', fee: 'USD 30', notes: 'E-visa available. Letter of Guarantee from Egyptian agent NOW MANDATORY.', us_visa_benefit: false, apply_url: 'https://visa2egypt.gov.eg', apply_label: 'Apply Egypt e-Visa' },
+    BAH: { country: 'Bahrain', visa_type: 'e_visa', max_stay: '14 days', fee: '~Rs.2,336', notes: 'E-visa at evisa.gov.bh.', us_visa_benefit: true, us_visa_detail: 'Cheaper VoA (BHD 5) at airport with US visa.', apply_url: 'https://www.evisa.gov.bh', apply_label: 'Apply Bahrain e-Visa' },
+    RUH: { country: 'Saudi Arabia', visa_type: 'e_visa', max_stay: '90 days', fee: '~Rs.11,770', notes: 'E-visa in minutes via official portal. Need used US/UK/Schengen visa.', us_visa_benefit: true, us_visa_detail: 'US visa (must have been used once) qualifies for instant e-visa.', apply_url: 'https://visa.visitsaudi.com', apply_label: 'Apply Saudi e-Visa' },
+    JED: { country: 'Saudi Arabia', visa_type: 'e_visa', max_stay: '90 days', fee: '~Rs.11,770', notes: 'E-visa available with qualifying visa.', us_visa_benefit: true, us_visa_detail: 'US visa qualifies for instant e-visa.', apply_url: 'https://visa.visitsaudi.com', apply_label: 'Apply Saudi e-Visa' },
+    JNB: { country: 'South Africa', visa_type: 'e_visa', max_stay: '90 days', fee: 'Varies', notes: 'New ETA system. Apply online, 24-48 hrs.', us_visa_benefit: false, apply_url: 'https://eta.dha.gov.za', apply_label: 'Apply South Africa ETA' },
+    // Visa Required (conditional VoA)
+    DXB: { country: 'UAE (Dubai)', visa_type: 'visa_required', max_stay: '14-60 days', fee: '~Rs.2,715+', notes: 'E-visa or VoA with qualifying visa. No general VoA for Indians.', us_visa_benefit: true, us_visa_detail: '14-day VoA (extendable to 28 days) with valid US visa. Expanded in June 2026.', apply_url: 'https://smartservices.icp.gov.ae/echannels/web/client/default.html#/fileVisa', apply_label: 'Apply UAE e-Visa (ICP)' },
+    AUH: { country: 'UAE (Abu Dhabi)', visa_type: 'visa_required', max_stay: '14-60 days', fee: '~Rs.2,715+', notes: 'Same as Dubai. VoA with qualifying visa.', us_visa_benefit: true, us_visa_detail: '14-day VoA with valid US visa.', apply_url: 'https://smartservices.icp.gov.ae/echannels/web/client/default.html#/fileVisa', apply_label: 'Apply UAE e-Visa (ICP)' },
+    MCT: { country: 'Oman', visa_type: 'visa_on_arrival', max_stay: '14 days', fee: 'Varies', notes: 'VoA with valid US/UK/Schengen visa. Otherwise e-visa.', us_visa_benefit: true, us_visa_detail: '14-day VoA with valid US visa.', apply_url: 'https://evisa.rop.gov.om', apply_label: 'Apply Oman e-Visa' },
+    // Visa Required
+    ICN: { country: 'South Korea', visa_type: 'visa_required', max_stay: '90 days', fee: 'Varies', notes: 'Embassy visa required. K-ETA NOT available for Indians.', us_visa_benefit: true, us_visa_detail: '30-day transit exemption when EN ROUTE to USA.', apply_url: 'https://www.visa.go.kr/openPage.do?MENU_ID=10101', apply_label: 'Apply Korea Visa' },
+    PEK: { country: 'China', visa_type: 'visa_required', max_stay: '30 days', fee: '~Rs.5,000', notes: 'Embassy visa at CVASC. Reduced fees until Dec 2026.', us_visa_benefit: false, apply_url: 'https://www.visaforchina.cn', apply_label: 'Apply China Visa (CVASC)' },
+    PVG: { country: 'China', visa_type: 'visa_required', max_stay: '30 days', fee: '~Rs.5,000', notes: 'Embassy visa required.', us_visa_benefit: false, apply_url: 'https://www.visaforchina.cn', apply_label: 'Apply China Visa (CVASC)' },
+    LHR: { country: 'United Kingdom', visa_type: 'visa_required', max_stay: '6 months', fee: 'GBP 135+', notes: 'UK visa required. Digital eVisa since Feb 2026.', us_visa_benefit: false, apply_url: 'https://www.gov.uk/standard-visitor/apply-standard-visitor-visa', apply_label: 'Apply UK Visa (gov.uk)' },
+    LGW: { country: 'United Kingdom', visa_type: 'visa_required', max_stay: '6 months', fee: 'GBP 135+', notes: 'UK visa required.', us_visa_benefit: false, apply_url: 'https://www.gov.uk/standard-visitor/apply-standard-visitor-visa', apply_label: 'Apply UK Visa (gov.uk)' },
+    JFK: { country: 'USA', visa_type: 'visa_required', max_stay: '6 months', fee: 'USD 185', notes: 'B1/B2 visa. In-person interview required.', us_visa_benefit: false, apply_url: 'https://www.ustraveldocs.com/in', apply_label: 'Apply US Visa (B1/B2)' },
+    LAX: { country: 'USA', visa_type: 'visa_required', max_stay: '6 months', fee: 'USD 185', notes: 'B1/B2 visa required.', us_visa_benefit: false, apply_url: 'https://www.ustraveldocs.com/in', apply_label: 'Apply US Visa (B1/B2)' },
+    SFO: { country: 'USA', visa_type: 'visa_required', max_stay: '6 months', fee: 'USD 185', notes: 'B1/B2 visa required.', us_visa_benefit: false, apply_url: 'https://www.ustraveldocs.com/in', apply_label: 'Apply US Visa (B1/B2)' },
+    ORD: { country: 'USA', visa_type: 'visa_required', max_stay: '6 months', fee: 'USD 185', notes: 'B1/B2 visa required.', us_visa_benefit: false, apply_url: 'https://www.ustraveldocs.com/in', apply_label: 'Apply US Visa (B1/B2)' },
+    EWR: { country: 'USA', visa_type: 'visa_required', max_stay: '6 months', fee: 'USD 185', notes: 'B1/B2 visa required.', us_visa_benefit: false, apply_url: 'https://www.ustraveldocs.com/in', apply_label: 'Apply US Visa (B1/B2)' },
+    YYZ: { country: 'Canada', visa_type: 'visa_required', max_stay: '6 months', fee: 'CAD 185', notes: 'TRV required. ETA NOT available for Indians.', us_visa_benefit: false, apply_url: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html', apply_label: 'Apply Canada Visa' },
+    YVR: { country: 'Canada', visa_type: 'visa_required', max_stay: '6 months', fee: 'CAD 185', notes: 'TRV required.', us_visa_benefit: false, apply_url: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html', apply_label: 'Apply Canada Visa' },
+    SYD: { country: 'Australia', visa_type: 'visa_required', max_stay: '12 months', fee: 'AUD 190', notes: 'Subclass 600. ETA NOT available for Indians.', us_visa_benefit: false, apply_url: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/visitor-600', apply_label: 'Apply Australia Visa' },
+    MEL: { country: 'Australia', visa_type: 'visa_required', max_stay: '12 months', fee: 'AUD 190', notes: 'Subclass 600 required.', us_visa_benefit: false, apply_url: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/visitor-600', apply_label: 'Apply Australia Visa' },
+    DAC: { country: 'Bangladesh', visa_type: 'visa_required', max_stay: '30 days', fee: '~Rs.825', notes: 'Pre-arranged visa. Govt fee waived for Indians.', us_visa_benefit: false, apply_url: 'https://www.bdhcdelhi.org/visa-information', apply_label: 'Bangladesh Visa Info' },
+    FRA: { country: 'Germany', visa_type: 'visa_required', max_stay: '90 days (Schengen)', fee: 'EUR 90', notes: 'Schengen visa via VFS Global.', us_visa_benefit: false, apply_url: 'https://www.vfsglobal.com/germany/india', apply_label: 'Apply Schengen Visa (VFS)' },
+    CDG: { country: 'France', visa_type: 'visa_required', max_stay: '90 days (Schengen)', fee: 'EUR 90', notes: 'Schengen visa required.', us_visa_benefit: false, apply_url: 'https://france-visas.gouv.fr', apply_label: 'Apply France Visa' },
+    AMS: { country: 'Netherlands', visa_type: 'visa_required', max_stay: '90 days (Schengen)', fee: 'EUR 90', notes: 'Schengen visa required.', us_visa_benefit: false, apply_url: 'https://www.vfsglobal.com/netherlands/india', apply_label: 'Apply Schengen Visa (VFS)' },
+    FCO: { country: 'Italy', visa_type: 'visa_required', max_stay: '90 days (Schengen)', fee: 'EUR 90', notes: 'Schengen visa required.', us_visa_benefit: false, apply_url: 'https://www.vfsglobal.com/italy/india', apply_label: 'Apply Schengen Visa (VFS)' },
+    BCN: { country: 'Spain', visa_type: 'visa_required', max_stay: '90 days (Schengen)', fee: 'EUR 90', notes: 'Schengen visa required.', us_visa_benefit: false, apply_url: 'https://www.blsindiavisa.com/spain', apply_label: 'Apply Schengen Visa (BLS)' },
+    ZRH: { country: 'Switzerland', visa_type: 'visa_required', max_stay: '90 days (Schengen)', fee: 'EUR 90', notes: 'Schengen visa required.', us_visa_benefit: false, apply_url: 'https://www.vfsglobal.com/switzerland/india', apply_label: 'Apply Schengen Visa (VFS)' },
+    DUB: { country: 'Ireland', visa_type: 'visa_required', max_stay: 'Per visa', fee: 'Varies', notes: 'Irish visa required unless BIVS-endorsed UK visa holder.', us_visa_benefit: false, apply_url: 'https://www.irishimmigration.ie/coming-to-visit-ireland/applying-for-a-short-stay-visa/', apply_label: 'Apply Ireland Visa' },
+  };
+  const data = visaMap[iata];
+  if (!data) return null;
+  return { domestic: false, ...data };
+}
+
+function renderVisaCard(data) {
+  const content = document.getElementById('visa-content');
+
+  if (data.domestic) {
+    content.innerHTML = `
+      <div class="visa-card domestic">
+        <div class="visa-header">
+          <span class="visa-country">${data.country}</span>
+          <span class="visa-type-badge vtb-domestic">NO VISA NEEDED</span>
+        </div>
+        <div class="visa-notes">${data.message}</div>
+      </div>`;
+    return;
+  }
+
+  const typeMap = {
+    visa_free: { label: 'VISA FREE', cls: 'visa-free', badge: 'vtb-free' },
+    free_eta: { label: 'FREE ETA', cls: 'visa-free', badge: 'vtb-free' },
+    visa_on_arrival: { label: 'VISA ON ARRIVAL', cls: 'visa-on-arrival', badge: 'vtb-voa' },
+    e_visa: { label: 'E-VISA', cls: 'e-visa', badge: 'vtb-evisa' },
+    visa_required: { label: 'VISA REQUIRED', cls: 'visa-required', badge: 'vtb-required' },
+    unknown: { label: 'CHECK EMBASSY', cls: 'visa-required', badge: 'vtb-required' },
+  };
+  const t = typeMap[data.visa_type] || typeMap.unknown;
+
+  let html = `
+    <div class="visa-card ${t.cls}">
+      <div class="visa-header">
+        <span class="visa-country">${data.country}</span>
+        <span class="visa-type-badge ${t.badge}">${t.label}</span>
+      </div>
+      <div class="visa-details">
+        <div class="visa-detail-item">
+          <div class="vd-label">Max Stay</div>
+          <div class="vd-value">${data.max_stay || 'Check embassy'}</div>
+        </div>
+        <div class="visa-detail-item">
+          <div class="vd-label">Fee</div>
+          <div class="vd-value">${data.fee || 'Varies'}</div>
+        </div>
+        <div class="visa-detail-item">
+          <div class="vd-label">Passport</div>
+          <div class="vd-value">Indian</div>
+        </div>
+      </div>
+      <div class="visa-notes">${data.notes || ''}</div>`;
+
+  // Show US visa benefit
+  if (hasUSVisa && data.us_visa_benefit && data.us_visa_detail) {
+    html += `
+      <div class="us-visa-box">
+        <h4>With Your US Visa</h4>
+        <p>${data.us_visa_detail}</p>
+      </div>`;
+  } else if (!hasUSVisa && data.us_visa_benefit) {
+    html += `
+      <div class="us-visa-box" style="background: #fff3e0; border-color: #ffcc02;">
+        <h4>Tip: US Visa Benefit Available</h4>
+        <p>If you have a valid US visa: ${data.us_visa_detail || 'Additional benefits available.'} Toggle "I have a valid US Visa" above to see details.</p>
+      </div>`;
+  }
+
+  // Apply / Registration link
+  if (data.apply_url) {
+    const label = data.apply_label || 'Apply for Visa';
+    html += `<a href="${data.apply_url}" target="_blank" rel="noopener noreferrer" class="visa-apply-btn">${label}</a>`;
+  }
+
+  html += `<div class="visa-disclaimer">Data as of September 2026. Visa policies change frequently. Always verify with the official embassy/immigration authority before booking.</div>`;
+  html += `</div>`;
+  content.innerHTML = html;
+}
+
+// ============================================================
+// PRIVACY: Ensure nothing is stored
+// ============================================================
+(function enforcePrivacy() {
+  // Clear any accidental storage on page load
+  try { localStorage.clear(); } catch(e) {}
+  try { sessionStorage.clear(); } catch(e) {}
+
+  // Override storage setItem to prevent any writes
+  const noop = function() {};
+  try {
+    Object.defineProperty(window, 'localStorage', {
+      value: { getItem: noop, setItem: noop, removeItem: noop, clear: noop, key: noop, length: 0 },
+      writable: false
+    });
+  } catch(e) {}
+
+  // Clear cookies for this page
+  document.cookie.split(";").forEach(function(c) {
+    document.cookie = c.trim().split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+  });
+})();
+
+// Prevent form caching
+window.addEventListener('pageshow', function() {
+  document.querySelectorAll('input, select').forEach(el => {
+    if (el.type !== 'date') el.value = '';
+  });
+});
+</script>
+</body>
+</html>
