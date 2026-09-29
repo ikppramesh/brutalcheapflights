@@ -1032,6 +1032,303 @@ body {
   .flight-price { text-align: center; }
   .price-summary { grid-template-columns: 1fr 1fr; }
 }
+
+/* ============================================================
+   MAIN TAB NAVIGATION
+   ============================================================ */
+.main-tabs {
+  background: linear-gradient(135deg, #0d1b2e 0%, #162d4a 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  position: sticky;
+  top: 68px;
+  z-index: 99;
+}
+.main-tabs-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 0;
+}
+.main-tab-btn {
+  padding: 14px 28px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.main-tab-btn:hover {
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.05);
+}
+.main-tab-btn.active {
+  color: #fff;
+  border-bottom-color: #4fc3f7;
+}
+.main-tab-btn .tab-icon {
+  font-size: 1.1rem;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ============================================================
+   FLIGHT TRACKING UI
+   ============================================================ */
+.track-section {
+  background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d2137 100%);
+  padding: 10px 0 50px;
+  margin-bottom: 30px;
+}
+.track-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+.track-mode-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  background: #f0f2f5;
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  width: fit-content;
+}
+.track-mode-btn {
+  padding: 8px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.track-mode-btn.active {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.track-input-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.track-input-row .form-group { flex: 1; min-width: 200px; }
+.track-input-row input, .track-input-row select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+.track-input-row input:focus, .track-input-row select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.track-btn {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+.track-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,82,204,0.4); }
+.track-btn:active { transform: translateY(0); }
+
+/* Track results */
+.track-results { margin-top: 30px; }
+.track-results h2 {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.track-summary-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.track-stat {
+  background: #f0f2f5;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.track-stat .stat-num {
+  font-size: 1.3rem;
+  color: var(--primary);
+  display: block;
+}
+
+/* Flight status cards */
+.track-flight-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr auto;
+  gap: 16px;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+.track-flight-card:hover { box-shadow: var(--shadow-hover); }
+
+.track-flight-id {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.track-flight-id .flight-code {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+.track-flight-id .airline-name {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.track-airport {
+  display: flex;
+  flex-direction: column;
+}
+.track-airport .airport-code {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.track-airport .airport-name {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.track-airport .time-scheduled {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-top: 4px;
+}
+.track-airport .time-actual {
+  font-size: 0.75rem;
+  color: var(--success);
+  font-weight: 600;
+}
+.track-airport .time-delay {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.flight-status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  white-space: nowrap;
+}
+.status-scheduled { background: #e3f2fd; color: #1565c0; }
+.status-active { background: #e8f5e9; color: #2e7d32; }
+.status-landed { background: #f3e5f5; color: #7b1fa2; }
+.status-cancelled { background: #ffebee; color: #c62828; }
+.status-incident { background: #fff3e0; color: #e65100; }
+.status-diverted { background: #fff8e1; color: #f57f17; }
+.status-unknown { background: #f5f5f5; color: #616161; }
+
+.track-flight-route {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.route-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  position: relative;
+  min-width: 40px;
+}
+.route-line::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--primary);
+  border-top: 2px solid var(--primary);
+  transform: rotate(45deg);
+}
+
+.track-extra-info {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.track-loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+.track-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.track-error {
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  color: #e65100;
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.track-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .main-tab-btn { padding: 12px 16px; font-size: 0.85rem; }
+  .main-tabs { top: 56px; }
+  .track-flight-card { grid-template-columns: 1fr; text-align: center; }
+  .track-flight-route { justify-content: center; }
+  .track-input-row { flex-direction: column; }
+  .track-input-row .form-group { min-width: 100%; }
+}
 </style>
 </head>
 <body>
@@ -1043,6 +1340,17 @@ body {
     <div class="privacy-badge">ZERO DATA STORED - PRIVATE</div>
   </div>
 </header>
+
+<!-- Main Tab Navigation -->
+<nav class="main-tabs">
+  <div class="main-tabs-inner">
+    <button class="main-tab-btn active" data-tab="search" onclick="switchMainTab('search')"><span class="tab-icon">&#9992;</span> Search Flights</button>
+    <button class="main-tab-btn" data-tab="track" onclick="switchMainTab('track')"><span class="tab-icon">&#128225;</span> Track Flights</button>
+  </div>
+</nav>
+
+<!-- ============ TAB: SEARCH FLIGHTS ============ -->
+<div id="tab-search" class="tab-panel active">
 
 <!-- Search Section -->
 <section class="search-section">
@@ -1460,6 +1768,85 @@ body {
     </div>
   </div>
 </section>
+
+</div><!-- END TAB: SEARCH FLIGHTS -->
+
+<!-- ============ TAB: TRACK FLIGHTS ============ -->
+<div id="tab-track" class="tab-panel">
+
+<section class="track-section">
+  <div class="container">
+    <div class="track-card">
+      <!-- Track Mode Toggle -->
+      <div class="track-mode-toggle">
+        <button class="track-mode-btn active" data-mode="flight" onclick="setTrackMode('flight')">By Flight</button>
+        <button class="track-mode-btn" data-mode="airport" onclick="setTrackMode('airport')">By Airport</button>
+        <button class="track-mode-btn" data-mode="airline" onclick="setTrackMode('airline')">By Airline</button>
+      </div>
+
+      <!-- Flight Number Search -->
+      <div id="track-flight-form" class="track-input-row">
+        <div class="form-group">
+          <label>Flight Number</label>
+          <input type="text" id="track-flight-input" placeholder="e.g. AI101, 6E2341, EK507" autocomplete="off" style="text-transform:uppercase;">
+        </div>
+        <button class="track-btn" onclick="trackFlight()">Track Flight</button>
+      </div>
+
+      <!-- Airport Search -->
+      <div id="track-airport-form" class="track-input-row" style="display:none;">
+        <div class="form-group">
+          <label>Airport Code</label>
+          <input type="text" id="track-airport-input" placeholder="e.g. DEL, BOM, DXB" autocomplete="off" maxlength="3" style="text-transform:uppercase;">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="track-airport-type">
+            <option value="departure">Departures</option>
+            <option value="arrival">Arrivals</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="track-airport-status">
+            <option value="">All</option>
+            <option value="active">Active / In Air</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="landed">Landed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button class="track-btn" onclick="trackAirport()">Track Airport</button>
+      </div>
+
+      <!-- Airline Search -->
+      <div id="track-airline-form" class="track-input-row" style="display:none;">
+        <div class="form-group">
+          <label>Airline Code</label>
+          <input type="text" id="track-airline-input" placeholder="e.g. AI, 6E, EK, SQ" autocomplete="off" maxlength="2" style="text-transform:uppercase;">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="track-airline-status">
+            <option value="">All</option>
+            <option value="active">Active / In Air</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="landed">Landed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button class="track-btn" onclick="trackAirline()">Track Airline</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Track Results -->
+<section class="container" id="track-results-section" style="display:none;">
+  <div id="track-results-content"></div>
+</section>
+
+</div><!-- END TAB: TRACK FLIGHTS -->
 
 <!-- Footer -->
 <footer class="footer">
@@ -2826,6 +3213,217 @@ window.addEventListener('pageshow', function() {
   document.querySelectorAll('input, select').forEach(el => {
     if (el.type !== 'date') el.value = '';
   });
+});
+
+// ============================================================
+// MAIN TAB SWITCHING
+// ============================================================
+function switchMainTab(tab) {
+  document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
+}
+
+// ============================================================
+// FLIGHT TRACKING — Aviationstack
+// ============================================================
+let trackMode = 'flight';
+
+function setTrackMode(mode) {
+  trackMode = mode;
+  document.querySelectorAll('.track-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  document.getElementById('track-flight-form').style.display = mode === 'flight' ? 'flex' : 'none';
+  document.getElementById('track-airport-form').style.display = mode === 'airport' ? 'flex' : 'none';
+  document.getElementById('track-airline-form').style.display = mode === 'airline' ? 'flex' : 'none';
+}
+
+function showTrackLoading() {
+  const section = document.getElementById('track-results-section');
+  section.style.display = 'block';
+  document.getElementById('track-results-content').innerHTML = '<div class="track-loading"><div class="spinner"></div><p>Fetching real-time flight data...</p></div>';
+}
+
+function showTrackError(msg) {
+  const section = document.getElementById('track-results-section');
+  section.style.display = 'block';
+  document.getElementById('track-results-content').innerHTML = `<div class="track-error">${msg}</div>`;
+}
+
+function formatTrackTime(isoStr) {
+  if (!isoStr) return '--:--';
+  try {
+    const d = new Date(isoStr);
+    return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+  } catch { return isoStr; }
+}
+
+function formatTrackDate(isoStr) {
+  if (!isoStr) return '';
+  try {
+    const d = new Date(isoStr);
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  } catch { return ''; }
+}
+
+function getStatusClass(status) {
+  const s = (status || '').toLowerCase();
+  if (s === 'active') return 'status-active';
+  if (s === 'scheduled') return 'status-scheduled';
+  if (s === 'landed') return 'status-landed';
+  if (s === 'cancelled') return 'status-cancelled';
+  if (s === 'incident') return 'status-incident';
+  if (s === 'diverted') return 'status-diverted';
+  return 'status-unknown';
+}
+
+function renderTrackResults(data, title) {
+  const section = document.getElementById('track-results-section');
+  section.style.display = 'block';
+  const container = document.getElementById('track-results-content');
+
+  const flights = data.data || [];
+  const total = data.pagination?.total || flights.length;
+
+  if (flights.length === 0) {
+    container.innerHTML = '<div class="track-empty">No flights found. Check the flight number or airport code and try again.</div>';
+    return;
+  }
+
+  // Count statuses
+  const statusCounts = {};
+  flights.forEach(f => {
+    const s = f.flight_status || 'unknown';
+    statusCounts[s] = (statusCounts[s] || 0) + 1;
+  });
+
+  let html = `<h2>${title}</h2>`;
+  html += '<div class="track-summary-bar">';
+  html += `<div class="track-stat"><span class="stat-num">${total}</span>Total Flights</div>`;
+  for (const [status, count] of Object.entries(statusCounts)) {
+    html += `<div class="track-stat"><span class="stat-num">${count}</span>${status.charAt(0).toUpperCase() + status.slice(1)}</div>`;
+  }
+  html += '</div>';
+
+  for (const f of flights) {
+    const dep = f.departure || {};
+    const arr = f.arrival || {};
+    const airline = f.airline || {};
+    const flight = f.flight || {};
+    const live = f.live;
+    const status = f.flight_status || 'unknown';
+
+    const depScheduled = formatTrackTime(dep.scheduled);
+    const depActual = dep.actual ? formatTrackTime(dep.actual) : (dep.estimated ? formatTrackTime(dep.estimated) : '');
+    const arrScheduled = formatTrackTime(arr.scheduled);
+    const arrActual = arr.actual ? formatTrackTime(arr.actual) : (arr.estimated ? formatTrackTime(arr.estimated) : '');
+    const depDelay = dep.delay ? `+${dep.delay}min` : '';
+    const arrDelay = arr.delay ? `+${arr.delay}min` : '';
+    const dateStr = f.flight_date || formatTrackDate(dep.scheduled);
+
+    let extraInfo = '';
+    if (dep.terminal) extraInfo += `T${dep.terminal}`;
+    if (dep.gate) extraInfo += ` Gate ${dep.gate}`;
+    if (arr.terminal) extraInfo += ` &rarr; T${arr.terminal}`;
+    if (arr.baggage) extraInfo += ` Bag:${arr.baggage}`;
+    if (live) {
+      extraInfo += ` | ALT: ${Math.round(live.altitude || 0)}m, Speed: ${Math.round(live.speed_horizontal || 0)}km/h`;
+      if (live.is_ground) extraInfo += ' (On Ground)';
+    }
+    if (flight.codeshared) {
+      extraInfo += ` | Codeshare: ${(flight.codeshared.airline_iata || '').toUpperCase()}${flight.codeshared.flight_number || ''}`;
+    }
+
+    html += `
+    <div class="track-flight-card">
+      <div class="track-flight-id">
+        <span class="flight-code">${flight.iata || flight.icao || '---'}</span>
+        <span class="airline-name">${airline.name || ''}</span>
+        <span style="font-size:0.7rem; color:#888; margin-top:2px;">${dateStr}</span>
+      </div>
+      <div class="track-flight-route">
+        <div class="track-airport">
+          <span class="airport-code">${dep.iata || '---'}</span>
+          <span class="airport-name">${dep.airport || ''}</span>
+          <span class="time-scheduled">${depScheduled}</span>
+          ${depActual ? `<span class="time-actual">Act: ${depActual}</span>` : ''}
+          ${depDelay ? `<span class="time-delay">Delay: ${depDelay}</span>` : ''}
+        </div>
+        <div class="route-line"></div>
+        <div class="track-airport">
+          <span class="airport-code">${arr.iata || '---'}</span>
+          <span class="airport-name">${arr.airport || ''}</span>
+          <span class="time-scheduled">${arrScheduled}</span>
+          ${arrActual ? `<span class="time-actual">Act: ${arrActual}</span>` : ''}
+          ${arrDelay ? `<span class="time-delay">Delay: ${arrDelay}</span>` : ''}
+        </div>
+      </div>
+      <div>
+        <span class="flight-status-badge ${getStatusClass(status)}">${status}</span>
+        ${extraInfo ? `<div class="track-extra-info">${extraInfo}</div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+async function trackFlight() {
+  const input = document.getElementById('track-flight-input').value.trim().toUpperCase();
+  if (!input) return showTrackError('Enter a flight number (e.g. AI101)');
+  showTrackLoading();
+  try {
+    const resp = await fetch(`/api/track?flight_iata=${encodeURIComponent(input)}`);
+    const data = await resp.json();
+    if (data.error) return showTrackError(data.error);
+    renderTrackResults(data, `Flight ${input}`);
+  } catch (err) {
+    showTrackError('Failed to track flight: ' + err.message);
+  }
+}
+
+async function trackAirport() {
+  const iata = document.getElementById('track-airport-input').value.trim().toUpperCase();
+  if (!iata) return showTrackError('Enter an airport code (e.g. DEL)');
+  const type = document.getElementById('track-airport-type').value;
+  const status = document.getElementById('track-airport-status').value;
+  showTrackLoading();
+  try {
+    let url = `/api/track/airport?iata=${encodeURIComponent(iata)}&type=${type}`;
+    if (status) url += `&status=${status}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) return showTrackError(data.error);
+    const typeLabel = type === 'arrival' ? 'Arrivals' : 'Departures';
+    renderTrackResults(data, `${iata} ${typeLabel}${status ? ` (${status})` : ''}`);
+  } catch (err) {
+    showTrackError('Failed to track airport: ' + err.message);
+  }
+}
+
+async function trackAirline() {
+  const iata = document.getElementById('track-airline-input').value.trim().toUpperCase();
+  if (!iata) return showTrackError('Enter an airline code (e.g. AI)');
+  const status = document.getElementById('track-airline-status').value;
+  showTrackLoading();
+  try {
+    let url = `/api/track/airline?iata=${encodeURIComponent(iata)}&status=${status}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) return showTrackError(data.error);
+    const airlineName = (data.data && data.data[0]?.airline?.name) || iata;
+    renderTrackResults(data, `${airlineName} Flights${status ? ` (${status})` : ''}`);
+  } catch (err) {
+    showTrackError('Failed to track airline: ' + err.message);
+  }
+}
+
+// Enter key support for track inputs
+document.addEventListener('DOMContentLoaded', function() {
+  const flightInput = document.getElementById('track-flight-input');
+  const airportInput = document.getElementById('track-airport-input');
+  const airlineInput = document.getElementById('track-airline-input');
+  if (flightInput) flightInput.addEventListener('keydown', e => { if (e.key === 'Enter') trackFlight(); });
+  if (airportInput) airportInput.addEventListener('keydown', e => { if (e.key === 'Enter') trackAirport(); });
+  if (airlineInput) airlineInput.addEventListener('keydown', e => { if (e.key === 'Enter') trackAirline(); });
 });
 </script>
 </body>

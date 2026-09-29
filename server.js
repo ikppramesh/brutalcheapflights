@@ -29,9 +29,14 @@ let googleFlightsExhausted = false;
 let skyscrapperExhausted = false;
 let flightapiExhausted = false;
 
+// Aviationstack — Real-time flight tracking
+const AVIATIONSTACK_KEY = process.env.AVIATIONSTACK_KEY;
+const aviationstackConfigured = !!(AVIATIONSTACK_KEY && AVIATIONSTACK_KEY !== 'your_aviationstack_key_here');
+
 if (googleFlightsConfigured) console.log('[API] Google Flights (RapidAPI) configured — 150 req/month');
 if (skyscrapperConfigured) console.log('[API] Sky-Scrapper (RapidAPI) configured — 100 req/month');
 if (flightapiConfigured) console.log('[API] FlightAPI.io configured — 20 credits');
+if (aviationstackConfigured) console.log('[API] Aviationstack configured — real-time flight tracking');
 if (!anyApiConfigured) console.log('WARNING: No API keys set. Live prices disabled.');
 
 // In-memory airport cache
@@ -464,7 +469,8 @@ app.get('/api/health', (req, res) => {
     providers: {
       google_flights: { configured: googleFlightsConfigured, exhausted: googleFlightsExhausted, limit: '150/month' },
       skyscrapper: { configured: skyscrapperConfigured, exhausted: skyscrapperExhausted, limit: '100/month' },
-      flightapi: { configured: flightapiConfigured, exhausted: flightapiExhausted, limit: '10 searches' }
+      flightapi: { configured: flightapiConfigured, exhausted: flightapiExhausted, limit: '10 searches' },
+      aviationstack: { configured: aviationstackConfigured, limit: 'real-time tracking' }
     },
     mode: 'production'
   });
@@ -531,6 +537,67 @@ app.get('/api/search', async (req, res) => {
       return res.status(429).json({ error: 'All flight API quotas exhausted.', detail: err.message });
     }
     res.status(500).json({ error: 'Flight search failed: ' + err.message, detail: err.message });
+  }
+});
+
+// ============================================================
+// Flight Tracking — Aviationstack real-time data
+// ============================================================
+
+// Track a specific flight by IATA code (e.g. AI101)
+app.get('/api/track', async (req, res) => {
+  if (!aviationstackConfigured) return res.status(503).json({ error: 'Aviationstack API key not configured.' });
+
+  const { flight_iata } = req.query;
+  if (!flight_iata) return res.status(400).json({ error: 'Missing flight_iata parameter (e.g. AI101)' });
+
+  try {
+    const url = `https://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&flight_iata=${encodeURIComponent(flight_iata.toUpperCase())}&limit=5`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) return res.status(400).json({ error: data.error.message || 'Aviationstack error' });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Flight tracking failed: ' + err.message });
+  }
+});
+
+// Live flights by departure or arrival airport
+app.get('/api/track/airport', async (req, res) => {
+  if (!aviationstackConfigured) return res.status(503).json({ error: 'Aviationstack API key not configured.' });
+
+  const { iata, type, status } = req.query;
+  if (!iata) return res.status(400).json({ error: 'Missing iata parameter (airport code e.g. DEL)' });
+
+  try {
+    const paramKey = type === 'arrival' ? 'arr_iata' : 'dep_iata';
+    let url = `https://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&${paramKey}=${encodeURIComponent(iata.toUpperCase())}&limit=100`;
+    if (status) url += `&flight_status=${encodeURIComponent(status)}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) return res.status(400).json({ error: data.error.message || 'Aviationstack error' });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Airport tracking failed: ' + err.message });
+  }
+});
+
+// Live flights by airline
+app.get('/api/track/airline', async (req, res) => {
+  if (!aviationstackConfigured) return res.status(503).json({ error: 'Aviationstack API key not configured.' });
+
+  const { iata, status } = req.query;
+  if (!iata) return res.status(400).json({ error: 'Missing iata parameter (airline code e.g. AI)' });
+
+  try {
+    let url = `https://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&airline_iata=${encodeURIComponent(iata.toUpperCase())}&limit=100`;
+    if (status) url += `&flight_status=${encodeURIComponent(status)}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) return res.status(400).json({ error: data.error.message || 'Aviationstack error' });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Airline tracking failed: ' + err.message });
   }
 });
 
